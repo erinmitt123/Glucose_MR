@@ -1,8 +1,10 @@
+using TMPro;
 using UnityEngine;
 
 public class UIControllerScript : MonoBehaviour
 {
     bool isTypeOne = false;
+   
     void Start()
     {
         
