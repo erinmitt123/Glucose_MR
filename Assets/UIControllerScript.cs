@@ -2,15 +2,19 @@ using UnityEngine;
 
 public class UIControllerScript : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    bool isTypeOne = false;
     void Start()
     {
         
     }
 
     // Update is called once per frame
-    void Update()
+    public void OnTypeTwoClicked()
     {
-        
+        isTypeOne = true;
+    }
+    public void OnTypeOneClicked()
+    {
+        isTypeOne = false;
     }
 }
