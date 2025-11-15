@@ -154,15 +154,15 @@ public class ObjectDetection : MonoBehaviour
             //var boxesShape = new TensorShape(new[] { 8400, 4 });
             var inputTensor = pipeline.CreateTensor<float, Matrix>(3, cropShape);
             predBoxesWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{8400, 4}));
-            predScoresWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{8400}));
-            predClassIdxWrite = pipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[]{8400}));
+            predScoresWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{8400, 1}));
+            predClassIdxWrite = pipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[]{8400, 1}));
             
             CreateYoloModel(pipeline, inputTensor,predBoxesWrite, predScoresWrite, predClassIdxWrite);
             
             // Create global tensors
             predBoxesGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[]{8400, 4}));
-            predScoresGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[]{8400}));
-            predClassIdxGlobal = provider.CreateTensor<int, Matrix>(1, new TensorShape(new[]{8400}));
+            predScoresGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[]{8400, 1}));
+            predClassIdxGlobal = provider.CreateTensor<int, Matrix>(1, new TensorShape(new[]{8400, 1}));
             cropRgbGlobal = provider.CreateTensor<byte, Matrix>(3, cropShape);
 
         
@@ -284,9 +284,9 @@ public class ObjectDetection : MonoBehaviour
             gltfPlaceholder2 = rendererPipeline.CreateTensorReference<Gltf>();
             gltfPlaceholder3 = rendererPipeline.CreateTensorReference<Gltf>();
 
-            predBoxesRead = rendererPipeline.CreateTensorReference<float, Matrix>(4, new TensorShape(new[] {8400}));
-            predScoresRead = rendererPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] {8400}));
-            predClassIdxRead = rendererPipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[] {8400}));
+            predBoxesRead = rendererPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] {8400, 4}));
+            predScoresRead = rendererPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] {8400, 1}));
+            predClassIdxRead = rendererPipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[] {8400, 1}));
             
             cropRgbRead = rendererPipeline.CreateTensorReference<byte, Matrix>(3, new TensorShape(new[] {cropWidth, cropHeight}));
 

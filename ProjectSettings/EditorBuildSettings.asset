@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/MnistwildDemo.unity
     guid: 3f835da6f99e7455b8489d915d4f197a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/ColorPickerDemo.unity
     guid: 6d3785010e8c44ffe8f7edef9d926844
   - enabled: 0
@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/UFODemo.unity
     guid: 92310e2c2b7fa4904b63899f39292c39
+  - enabled: 1
+    path: Assets/Scenes/ObjectDetection.unity
+    guid: 2da06f247f56e164ab051164a24e0410
   m_configObjects:
     Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: eae7a8c248df266438c1a1a7d5a9520a, type: 2}
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: 9801a56ed26d34dc0936cb367ad2a8a5, type: 2}
