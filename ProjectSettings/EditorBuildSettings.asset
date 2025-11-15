@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/MnistwildDemo.unity
     guid: 3f835da6f99e7455b8489d915d4f197a
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/ColorPickerDemo.unity
     guid: 6d3785010e8c44ffe8f7edef9d926844
   - enabled: 0
@@ -20,7 +20,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/MinimalApp.unity
     guid: c4220b2c4650446068ce7489529219bf
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MnistwildDemoMonobehaviour.unity
     guid: 897faf83dd04449fa956d6c74e129c60
   - enabled: 0
@@ -30,6 +30,7 @@ EditorBuildSettings:
     path: Assets/Scenes/UFODemo.unity
     guid: 92310e2c2b7fa4904b63899f39292c39
   m_configObjects:
+    Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: eae7a8c248df266438c1a1a7d5a9520a, type: 2}
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: 9801a56ed26d34dc0936cb367ad2a8a5, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 657b72366346b4f71b2cb69866aaf03a, type: 2}
