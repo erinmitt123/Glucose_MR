@@ -2,7 +2,6 @@ using Pico.Platform;
 using TMPro;
 using UnityEngine.Android;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 
