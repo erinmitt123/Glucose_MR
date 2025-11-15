@@ -32,8 +32,9 @@ public class ObjectDetection : MonoBehaviour
         private Pipeline rendererPipeline;
 
         // Global tensors
-        private Tensor predClassGlobal;
-        private Tensor predScoreGlobal;
+        private Tensor predBoxesGlobal;
+        private Tensor predScoresGlobal;
+        private Tensor predClassIdxGlobal;
         private Tensor cropRgbGlobal;
 
         // Pipeline tensors
@@ -43,8 +44,9 @@ public class ObjectDetection : MonoBehaviour
         private Tensor cropRgbWrite;
 
         // Renderer pipeline tensors
-        private Tensor predClassRead;
-        private Tensor predScoreRead;
+        private Tensor predBoxesRead;
+        private Tensor predScoresRead;
+        private Tensor predClassIdxRead;
         private Tensor cropRgbRead;
 
         // GLTF tensors
@@ -151,15 +153,16 @@ public class ObjectDetection : MonoBehaviour
             
             //var boxesShape = new TensorShape(new[] { 8400, 4 });
             var inputTensor = pipeline.CreateTensor<float, Matrix>(3, cropShape);
-            predBoxesWrite = pipeline.CreateTensorReference<float, Matrix>(4, new TensorShape(new[]{8400}));
+            predBoxesWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{8400, 4}));
             predScoresWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{8400}));
             predClassIdxWrite = pipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[]{8400}));
             
             CreateYoloModel(pipeline, inputTensor,predBoxesWrite, predScoresWrite, predClassIdxWrite);
             
             // Create global tensors
-            predClassGlobal = provider.CreateTensor<int, Scalar>(1, new TensorShape(new[] { 1 }));
-            predScoreGlobal = provider.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }));
+            predBoxesGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[]{8400, 4}));
+            predScoresGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[]{8400}));
+            predClassIdxGlobal = provider.CreateTensor<int, Matrix>(1, new TensorShape(new[]{8400}));
             cropRgbGlobal = provider.CreateTensor<byte, Matrix>(3, cropShape);
 
         
@@ -203,9 +206,13 @@ public class ObjectDetection : MonoBehaviour
             // Create operators
             var renderTextOp = rendererPipeline.CreateOperator<RenderTextOperator>(
                 new RenderTextOperatorConfiguration(SecureMRFontTypeface.SansSerif, "en-US", 1440, 960));
-            var renderGltfOp = rendererPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
             var renderTextOp2 = rendererPipeline.CreateOperator<RenderTextOperator>(
                 new RenderTextOperatorConfiguration(SecureMRFontTypeface.SansSerif, "en-US", 1440, 960));
+            var renderTextOp3 = rendererPipeline.CreateOperator<RenderTextOperator>(
+                new RenderTextOperatorConfiguration(SecureMRFontTypeface.SansSerif, "en-US", 1440, 960));
+            
+            
+            var renderGltfOp = rendererPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
             var renderGltfOp2 = rendererPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
             var renderGltfOp3 = rendererPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
             var loadTextureOp = rendererPipeline.CreateOperator<LoadTextureOperator>();
@@ -214,7 +221,7 @@ public class ObjectDetection : MonoBehaviour
 
             // Create tensors
             var text = rendererPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
-                Encoding.UTF8.GetBytes("MNIST Demo"));
+                Encoding.UTF8.GetBytes("Boxes"));
             var startPosition = rendererPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
                 new float[] { 0.1f, 0.3f });
             var colors = rendererPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
@@ -233,7 +240,7 @@ public class ObjectDetection : MonoBehaviour
                 });
 
             var text2 = rendererPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
-                Encoding.UTF8.GetBytes("Score"));
+                Encoding.UTF8.GetBytes("Scores"));
             var startPosition2 = rendererPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
                 new float[] { 0.1f, 0.3f });
             var colors2 = rendererPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
@@ -242,6 +249,18 @@ public class ObjectDetection : MonoBehaviour
                 new ushort[] { 0 });
             var fontSize2 = rendererPipeline.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }),
                 new float[] { 144.0f });
+            
+            var text3 = rendererPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
+                Encoding.UTF8.GetBytes("Class Idx"));
+            var startPosition3 = rendererPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
+                new float[] { 0.1f, 0.3f });
+            var colors3 = rendererPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
+                new byte[] { 255, 255, 255, 255, 0, 0, 0, 255 });
+            var textureId3 = rendererPipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }),
+                new ushort[] { 0 });
+            var fontSize3 = rendererPipeline.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }),
+                new float[] { 144.0f });
+            
             var poseMat2 = rendererPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }),
                 new float[]
                 {
@@ -265,8 +284,10 @@ public class ObjectDetection : MonoBehaviour
             gltfPlaceholder2 = rendererPipeline.CreateTensorReference<Gltf>();
             gltfPlaceholder3 = rendererPipeline.CreateTensorReference<Gltf>();
 
-            predClassRead = rendererPipeline.CreateTensorReference<int, Scalar>(1, new TensorShape(new[] {1}));
-            predScoreRead = rendererPipeline.CreateTensorReference<float, Scalar>(1, new TensorShape(new[] {1}));
+            predBoxesRead = rendererPipeline.CreateTensorReference<float, Matrix>(4, new TensorShape(new[] {8400}));
+            predScoresRead = rendererPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] {8400}));
+            predClassIdxRead = rendererPipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[] {8400}));
+            
             cropRgbRead = rendererPipeline.CreateTensorReference<byte, Matrix>(3, new TensorShape(new[] {cropWidth, cropHeight}));
 
             var gltfMaterialIndex = rendererPipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }),
@@ -279,23 +300,30 @@ public class ObjectDetection : MonoBehaviour
             gltfTensor3 = provider.CreateTensor<Gltf>(frameGltfAsset.bytes);
 
             // Connect the operators
-            renderTextOp.SetOperand("text", predClassRead);
+            renderTextOp.SetOperand("text", predBoxesRead);
             renderTextOp.SetOperand("start", startPosition);
             renderTextOp.SetOperand("colors", colors);
             renderTextOp.SetOperand("texture ID", textureId);
             renderTextOp.SetOperand("font size", fontSize);
             renderTextOp.SetOperand("gltf", gltfPlaceholder);
-
-            renderGltfOp.SetOperand("gltf", gltfPlaceholder);
-            renderGltfOp.SetOperand("world pose", poseMat);
-            renderGltfOp.SetOperand("view locked", poseMat);
-
-            renderTextOp2.SetOperand("text", predScoreRead);
+            
+            renderTextOp2.SetOperand("text", predScoresRead);
             renderTextOp2.SetOperand("start", startPosition2);
             renderTextOp2.SetOperand("colors", colors2);
             renderTextOp2.SetOperand("texture ID", textureId2);
             renderTextOp2.SetOperand("font size", fontSize2);
             renderTextOp2.SetOperand("gltf", gltfPlaceholder2);
+            
+            renderTextOp3.SetOperand("text", predClassIdxRead);
+            renderTextOp3.SetOperand("start", startPosition3);
+            renderTextOp3.SetOperand("colors", colors3);
+            renderTextOp3.SetOperand("texture ID", textureId3);
+            renderTextOp3.SetOperand("font size", fontSize3);
+            renderTextOp3.SetOperand("gltf", gltfPlaceholder3);
+
+            renderGltfOp.SetOperand("gltf", gltfPlaceholder);
+            renderGltfOp.SetOperand("world pose", poseMat);
+            renderGltfOp.SetOperand("view locked", poseMat);
 
             renderGltfOp2.SetOperand("gltf", gltfPlaceholder2);
             renderGltfOp2.SetOperand("world pose", poseMat2);
@@ -321,8 +349,9 @@ public class ObjectDetection : MonoBehaviour
             Debug.Log("Running pipeline...");
 
             var tensorMapping = new TensorMapping();
-            tensorMapping.Set(predClassWrite, predClassGlobal);
-            tensorMapping.Set(predScoreWrite, predScoreGlobal);
+            tensorMapping.Set(predBoxesWrite, predBoxesGlobal);
+            tensorMapping.Set(predScoresWrite, predScoresGlobal);
+            tensorMapping.Set(predClassIdxWrite, predClassIdxGlobal);
             tensorMapping.Set(cropRgbWrite, cropRgbGlobal);
 
             pipeline.Execute(tensorMapping);
@@ -336,8 +365,10 @@ public class ObjectDetection : MonoBehaviour
             tensorMapping.Set(gltfPlaceholder, gltfTensor);
             tensorMapping.Set(gltfPlaceholder2, gltfTensor2);
             tensorMapping.Set(gltfPlaceholder3, gltfTensor3);
-            tensorMapping.Set(predClassRead, predClassGlobal);
-            tensorMapping.Set(predScoreRead, predScoreGlobal);
+            
+            tensorMapping.Set(predBoxesRead, predBoxesGlobal);
+            tensorMapping.Set(predScoresRead, predScoresGlobal);
+            tensorMapping.Set(predClassIdxRead, predClassIdxGlobal);
             tensorMapping.Set(cropRgbRead, cropRgbGlobal);
 
             rendererPipeline.Execute(tensorMapping);
