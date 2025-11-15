@@ -4,6 +4,9 @@ using Unity.XR.PXR.SecureMR;
 using System.Collections.Concurrent;
 using System.Threading;
 using System;
+using System.Text;
+using Color = Unity.XR.PXR.SecureMR.Color;
+
 namespace PicoXR.SecureMR.Demo
 {
 public class ObjectDetection : MonoBehaviour
@@ -11,177 +14,72 @@ public class ObjectDetection : MonoBehaviour
     public TextAsset yoloModel;
     public TextAsset frameGltfAsset;
     public TextAsset anchorMatrixAsset;
-        private int vstWidth = 256;
-        private int vstHeight = 256;
+      public int numFramesToRun = -1;
+        public float intervalBetweenPipelineRuns = 0.033f;
+        private int vstWidth = 3248;
+        private int vstHeight = 2464;
+        private int cropWidth = 640; // yolo
+        private int cropHeight = 640; //yolo
+        private int cropX1 = 1444;
+        private int cropY1 = 1332;
+        private int cropX2 = 2045;
+        private int cropY2 = 1933;
 
+        private int countFrames = 0;
+        private float _elapsedTime = 0f;
         private Provider provider;
-        private Pipeline vstPipeline;
-        private Pipeline modelInferencePipeline;
-        private Pipeline map2dTo3dPipeline;
-        private Pipeline renderPipeline;
+        private Pipeline pipeline;
+        private Pipeline rendererPipeline;
 
-        // Global tensors for sharing data between pipelines
-        private Tensor vstOutputLeftUint8Global;
-        private Tensor vstOutputRightUint8Global;
-        private Tensor vstOutputLeftFp32Global;
-        private Tensor vstTimestampGlobal;
-        private Tensor vstCameraMatrixGlobal;
-        private Tensor vstImagePlaceholder;
-        // private Tensor isUfoDetectedGlobal;
-        private Tensor currentPositionGlobal;
-        private Tensor previousPositionGlobal;
-        private Tensor leftEyeUVGlobal;
+        // Global tensors
+        private Tensor predClassGlobal;
+        private Tensor predScoreGlobal;
+        private Tensor cropRgbGlobal;
 
-        // Pipeline tensors for VST
-        private Tensor vstOutputLeftUint8Placeholder;
-        private Tensor vstOutputLeftUint8Placeholder1;
-        private Tensor vstOutputRightUint8Placeholder;
-        private Tensor vstOutputRightUint8Placeholder1;
-        private Tensor vstOutputLeftFp32Placeholder;
-        private Tensor vstTimestampPlaceholder;
-        private Tensor vstTimestampPlaceholder1;
-        private Tensor vstCameraMatrixPlaceholder;
-        private Tensor vstCameraMatrixPlaceholder1;
+        // Pipeline tensors
+        private Tensor predBoxesWrite;
+        private Tensor predScoresWrite;
+        private Tensor predClassIdxWrite;
+        private Tensor cropRgbWrite;
 
-        // Pipeline tensors for model inference
-        private ModelOperatorConfiguration modelConfig;
-        private byte[] anchorBytes;
-        private Tensor leftEyeUVPlaceholder;
-
-        // Pipeline tensors for 2D to 3D mapping
-        private Tensor uvPlaceholder;
-        private Tensor map2dTo3dPositionPlaceholder;
-
-        // Pipeline tensors for rendering
-        private Tensor currentPositionRead;
-        private Tensor previousPositionRead;
+        // Renderer pipeline tensors
+        private Tensor predClassRead;
+        private Tensor predScoreRead;
+        private Tensor cropRgbRead;
 
         // GLTF tensors
         private Tensor gltfTensor;
+        private Tensor gltfTensor2;
+        private Tensor gltfTensor3;
         private Tensor gltfPlaceholder;
-
-        private float elapsed = 0.0f;
-        private float vstElapsed = 0f;
-        private float modelElapsed = 0f;
-        private float mapElapsed = 0f;
-        private float renderElapsed = 0f;
+        private Tensor gltfPlaceholder2;
+        private Tensor gltfPlaceholder3;
 
         private void Awake()
         {
             PXR_Manager.EnableVideoSeeThrough = true;
-            Application.targetFrameRate = 30;
         }
-
-        private volatile bool pipelinesReady = false;
-        private ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
-        private volatile bool vstPipelineReady = false;
-        private volatile bool modelInferencePipelineReady = false;
-        private volatile bool map2dTo3dPipelineReady = false;
-        private volatile bool renderPipelineReady = false;
-        private object pipelineLock = new object();
 
         private void Start()
         {
-            try
-            {
-                CreateProvider();
-                vstPipeline = provider.CreatePipeline();
-                modelInferencePipeline = provider.CreatePipeline();
-                map2dTo3dPipeline = provider.CreatePipeline();
-                renderPipeline = provider.CreatePipeline();
-
-                CreateGlobalTensors();
-
-                new Thread(() => 
-                {
-                    try 
-                    {
-                        CreateVstPipeline();
-                        lock(pipelineLock) { vstPipelineReady = true; }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"Compute thread failed: {e.Message}");
-                    }
-                }).Start();
-
-                new Thread(() =>
-                {
-                    try
-                    {
-                        CreateModelInferencePipeline();
-                        lock(pipelineLock) { modelInferencePipelineReady = true; }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"Model inference thread failed: {e.Message}");
-                    }
-                }).Start();
-
-                new Thread(() =>
-                {
-                    try
-                    {
-                        CreateMap2dTo3dPipeline();
-                        lock(pipelineLock) { map2dTo3dPipelineReady = true; }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"Map2dTo3d thread failed: {e.Message}");
-                    }
-                }).Start();
-
-                new Thread(() => 
-                {
-                    try 
-                    {
-                        CreateRenderPipeline();
-                        lock(pipelineLock) { renderPipelineReady = true; }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"Render thread failed: {e.Message}");
-                    }
-                }).Start();
-
-
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Provider creation failed: {e.Message}");
-            }
+            CreateProvider();
+            CreatePipeline();
+            CreateRenderer();
         }
 
         private void Update()
         {
-            // Check if all pipelines are ready before proceeding
-            if (!vstPipelineReady || !modelInferencePipelineReady || !map2dTo3dPipelineReady || !renderPipelineReady)
-                return;
-
-            vstElapsed += Time.deltaTime;
-            modelElapsed += Time.deltaTime;
-            mapElapsed += Time.deltaTime;
-
-            // Only execute when pipelines are ready and interval reached
-            if (vstElapsed >= 0.33f)
+            if (numFramesToRun < 0 || countFrames < numFramesToRun)
             {
-                RunVstPipeline();
-                vstElapsed = 0f;
+                _elapsedTime += Time.deltaTime;
+                if (_elapsedTime > intervalBetweenPipelineRuns)
+                {
+                    RunPipeline();
+                    _elapsedTime = 0.0f;
+                }
+                RenderFrame();
+                countFrames++;
             }
-
-            if (modelElapsed >= 0.5f)
-            {
-                RunModelInferencePipeline();
-                modelElapsed = 0f;
-            }
-
-            if (mapElapsed >= 0.5f)
-            {
-                RunMap2dTo3dPipeline();
-                mapElapsed = 0f;
-            }
-
-            RunRenderPipeline();
         }
 
         private void CreateProvider()
@@ -189,370 +87,260 @@ public class ObjectDetection : MonoBehaviour
             provider = new Provider(vstWidth, vstHeight);
         }
 
-        private void CreateGlobalTensors()
+        private void CreateYoloModel(Pipeline pipelineParam, Tensor inputTensor, Tensor predBoxes,
+            Tensor predScores, Tensor predClassIdx)
         {
-            // Create global tensors for VST
-            vstOutputLeftUint8Global = provider.CreateTensor<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-            vstOutputRightUint8Global = provider.CreateTensor<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-            vstOutputLeftFp32Global = provider.CreateTensor<float, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-            vstTimestampGlobal = provider.CreateTensor<int, TimeStamp>(4, new TensorShape(new[] { 1 }));
-            vstCameraMatrixGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 3, 3 }));
-
-            // Create global tensors for UFO detection
-            modelConfig = new ModelOperatorConfiguration(yoloModel.bytes, SecureMRModelType.QnnContextBinary, "yolo");
-            //modelConfig.AddInputMapping();
-            anchorBytes = anchorMatrixAsset.bytes;
-            leftEyeUVGlobal = provider.CreateTensor<int, Point>(2, new TensorShape(new[] { 1 }));
-
-            // Create global tensors for position tracking
-            currentPositionGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }),
-                    new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f});
-            previousPositionGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }),
-                    new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f});
-
-            byte[] gltfBytes = frameGltfAsset.bytes;
-            gltfTensor = provider.CreateTensor<Gltf>(gltfBytes);
+            // Create YOLO model operator
+            var modelConfig = new ModelOperatorConfiguration(yoloModel.bytes, SecureMRModelType.QnnContextBinary, "yolo");
+            modelConfig.AddInputMapping("image", "image", SecureMRModelEncoding.Float32);
+            modelConfig.AddOutputMapping("_571", "_571", SecureMRModelEncoding.Float32);
+            modelConfig.AddOutputMapping("_530", "_530", SecureMRModelEncoding.Float32);
+            modelConfig.AddOutputMapping("_532", "_532", SecureMRModelEncoding.Int8);
+            var modelOp = pipelineParam.CreateOperator<RunModelInferenceOperator>(modelConfig);
+    
+            modelOp.SetOperand("image", inputTensor);
+            modelOp.SetResult("_571", predBoxes);
+            modelOp.SetResult("_530", predScores);
+            modelOp.SetResult("_532", predClassIdx);
         }
 
-        private void CreateVstPipeline()
+        private void CreatePipeline()
         {
-            lock(pipelineLock)
+            if (provider == null)
             {
-                try
-                {
-                    // Create pipeline placeholders for global tensors
-                    vstOutputLeftUint8Placeholder = vstPipeline.CreateTensorReference<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-                    vstOutputRightUint8Placeholder = vstPipeline.CreateTensorReference<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-                    vstOutputLeftFp32Placeholder = vstPipeline.CreateTensorReference<float, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-                    vstTimestampPlaceholder = vstPipeline.CreateTensorReference<int, TimeStamp>(4, new TensorShape(new[] { 1 }));
-                    vstCameraMatrixPlaceholder = vstPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] { 3, 3 }));
-
-                    // Create VST access operator and connect tensors
-                    var vstOp = vstPipeline.CreateOperator<RectifiedVstAccessOperator>();
-                    vstOp.SetResult("left image", vstOutputLeftUint8Placeholder);
-                    vstOp.SetResult("right image", vstOutputRightUint8Placeholder);
-                    vstOp.SetResult("timestamp", vstTimestampPlaceholder);
-                    vstOp.SetResult("camera matrix", vstCameraMatrixPlaceholder);
-
-                    // Create assignment operator for uint8 to fp32 conversion
-                    var assignmentOp = vstPipeline.CreateOperator<AssignmentOperator>();
-                    assignmentOp.SetOperand("src", vstOutputLeftUint8Placeholder);
-                    assignmentOp.SetResult("dst", vstOutputLeftFp32Placeholder);
-
-                    // Create arithmetic operator for normalization
-                    var arithmeticOp = vstPipeline.CreateOperator<ArithmeticComposeOperator>(new ArithmeticComposeOperatorConfiguration("({0} / 255.0)"));
-                    arithmeticOp.SetOperand("{0}", vstOutputLeftFp32Placeholder);
-                    arithmeticOp.SetResult("result", vstOutputLeftFp32Placeholder);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"VST pipeline creation failed: {e.Message}");
-                    mainThreadActions.Enqueue(() => pipelinesReady = false);
-                }
+                Debug.LogError("Provider is not initialized.");
+                return;
             }
-        }
 
-        private void CreateModelInferencePipeline()
-        {
-            lock(pipelineLock)
-            {
-                try
-                {
-                    // Create pipeline placeholders for global tensors
-                    vstImagePlaceholder = modelInferencePipeline.CreateTensorReference<float, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-                    leftEyeUVPlaceholder = modelInferencePipeline.CreateTensorReference<int, Point>(2, new TensorShape(new[] { 1 }));
-                    
-                    // 1. model inference
-                    var ufoAnchor = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 16 }));
-                    var ufoScores = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 1}));
+            Debug.Log("Creating pipeline...");
 
-                    // var modelConfig = new ModelOperatorConfiguration(ufoModel.bytes, SecureMRModelType.QnnContextBinary, "face");
-                    modelConfig.AddInputMapping("image", "image", SecureMRModelEncoding.Float32);
-                    modelConfig.AddOutputMapping("box_coords", "box_coords", SecureMRModelEncoding.Float32);
-                    modelConfig.AddOutputMapping("box_scores", "box_scores", SecureMRModelEncoding.Float32);
-                    
-                    var modelOp = modelInferencePipeline.CreateOperator<RunModelInferenceOperator>(modelConfig);
-                    modelOp.SetOperand("image", vstImagePlaceholder);
-                    modelOp.SetResult("box_coords", ufoAnchor);
-                    modelOp.SetResult("box_scores", ufoScores);
+            // Create the pipeline
+            pipeline = provider.CreatePipeline();
 
-                    // 2. apply anchor
-                    // var anchorBytes = anchorMatrixAsset.bytes;
-                    var anchorFloats = new float[anchorBytes.Length / sizeof(float)];
-                    Buffer.BlockCopy(anchorBytes, 0, anchorFloats, 0, anchorBytes.Length);
-                    var anchorMatTensor = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 4 }), anchorFloats);
-                    var ufoLandmarks = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 4 }));
-                
-                    // Create slice tensors for landmarks
-                    var srcSliceTensor = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), new[] { 0, 896, 4, 8 });
-                    var anchorToSliceOp = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    anchorToSliceOp.SetOperand("src", ufoAnchor);
-                    anchorToSliceOp.SetOperand("src slices", srcSliceTensor);
-                    anchorToSliceOp.SetResult("dst", ufoLandmarks);
+            // Create operators
+            var vstOp = pipeline.CreateOperator<RectifiedVstAccessOperator>();
+            var getAffineOp = pipeline.CreateOperator<GetAffineOperator>();
+            var applyAffineOp = pipeline.CreateOperator<ApplyAffineOperator>();
+            var rgbToGrayOp =
+                pipeline.CreateOperator<ConvertColorOperator>(
+                    new ColorConvertOperatorConfiguration(7)); // 7 = RGB to Gray
+            var uint8ToFloat32Op = pipeline.CreateOperator<AssignmentOperator>();
+            var normalizeOp =
+                pipeline.CreateOperator<ArithmeticComposeOperator>(
+                    new ArithmeticComposeOperatorConfiguration("{0} / 255.0"));
 
-                    // Process anchor matrix
-                    var anchorMatFirstTwoCols = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 2 }));
-                    var srcSliceFirstTwoColsTensor = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), new[] { 0, 896, 0, 2 });
+            // Create tensors
+            var cropShape = new TensorShape(new[] { cropWidth, cropHeight });
+            var rawRgb = pipeline.CreateTensor<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
+            var cropGray = pipeline.CreateTensor<byte, Matrix>(1, cropShape);
+            var cropGrayFloat =
+                pipeline.CreateTensor<float, Matrix>(1, cropShape);
+            cropRgbWrite = pipeline.CreateTensorReference<byte, Matrix>(3, cropShape);
 
-                    var sliceOpAnchorMatFirstTwoCols = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    sliceOpAnchorMatFirstTwoCols.SetOperand("src", anchorMatTensor);
-                    sliceOpAnchorMatFirstTwoCols.SetOperand("src slices", srcSliceFirstTwoColsTensor);
-                    sliceOpAnchorMatFirstTwoCols.SetResult("dst", anchorMatFirstTwoCols);
+            // Create source and destination points for affine transform
+            var srcPoints = pipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 3 }),
+                new float[] { cropX1, cropY1, cropX2, cropY1, cropX2, cropY2 });
+            var dstPoints = pipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 3 }),
+                new float[] { 0, 0, cropWidth, 0, cropWidth, cropHeight });
+            var affineMat = pipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 2, 3 }));
 
-                    // Duplicate anchor matrix
-                    var anchorMatDuplicated = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 4 }));
-                    
-                    // Copy first two columns
-                    var assignOpAnchorMatDuplicated = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    assignOpAnchorMatDuplicated.SetOperand("src", anchorMatFirstTwoCols);
-                    assignOpAnchorMatDuplicated.SetOperand("dst slices", srcSliceFirstTwoColsTensor);
-                    assignOpAnchorMatDuplicated.SetResult("dst", anchorMatDuplicated);
+            // Create Yolo model and tensors
+            //var inputTensor = pipeline.CreateTensor<float, Matrix>(3, cropShape);
+            //predClassWrite = pipeline.CreateTensorReference<int, Scalar>(1, new TensorShape(new[]{1}));
+            //predScoreWrite = pipeline.CreateTensorReference<float, Scalar>(1, new TensorShape(new[]{1}));
+            
+            //var boxesShape = new TensorShape(new[] { 8400, 4 });
+            var inputTensor = pipeline.CreateTensor<float, Matrix>(3, cropShape);
+            predBoxesWrite = pipeline.CreateTensorReference<float, Matrix>(4, new TensorShape(new[]{8400}));
+            predScoresWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{8400}));
+            predClassIdxWrite = pipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[]{8400}));
+            
+            CreateYoloModel(pipeline, inputTensor,predBoxesWrite, predScoresWrite, predClassIdxWrite);
+            
+            // Create global tensors
+            predClassGlobal = provider.CreateTensor<int, Scalar>(1, new TensorShape(new[] { 1 }));
+            predScoreGlobal = provider.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }));
+            cropRgbGlobal = provider.CreateTensor<byte, Matrix>(3, cropShape);
 
-                    // Copy last two columns
-                    var srcSliceLastTwoColsTensor = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), new[] { 0, 896, 2, 4 });
-                    var assignOpAnchorMatDuplicated2 = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    assignOpAnchorMatDuplicated2.SetOperand("src", anchorMatTensor);
-                    assignOpAnchorMatDuplicated2.SetOperand("dst slices", srcSliceLastTwoColsTensor);
-                    assignOpAnchorMatDuplicated2.SetResult("dst", anchorMatDuplicated);
-
-                    // Process landmarks
-                    var landmarksArithmeticOp = modelInferencePipeline.CreateOperator<ArithmeticComposeOperator>(
-                        new ArithmeticComposeOperatorConfiguration("({0} / 256.0 + {1}) * 256.0"));
-                    landmarksArithmeticOp.SetOperand("{0}", ufoLandmarks);
-                    landmarksArithmeticOp.SetOperand("{1}", anchorMatDuplicated);
-                    landmarksArithmeticOp.SetResult("result", ufoLandmarks);
-
-                    // 3. get best detection - argmax
-                    var bestFaceIndex = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 1 }));
-                    var bestFaceIndexMat = modelInferencePipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, 1 }));
-                    var bestFaceIndexPlusOne = modelInferencePipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, 1 }));
-
-                    // Find best detection using ArgMax
-                    var argmaxOp = modelInferencePipeline.CreateOperator<ArgmaxOperator>();
-                    argmaxOp.SetOperand("operand", ufoScores);
-                    argmaxOp.SetResult("result", bestFaceIndex);
-
-                    // Convert scalar to matrix
-                    var assignmentOpBestFaceIndex = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    assignmentOpBestFaceIndex.SetOperand("src", bestFaceIndex);
-                    assignmentOpBestFaceIndex.SetResult("dst", bestFaceIndexMat);
-
-                    // Add 1 to index
-                    var arithmeticOp = modelInferencePipeline.CreateOperator<ArithmeticComposeOperator>(
-                        new ArithmeticComposeOperatorConfiguration("{0} + 1"));
-                    arithmeticOp.SetOperand("{0}", bestFaceIndexMat);
-                    arithmeticOp.SetResult("result", bestFaceIndexPlusOne);
-
-                    // Create slice tensors for best face
-                    var srcSlicesBestFace = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), 
-                        new[] { 0, 896, 0, 4 });
-                    var dstSlicesBestFace = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 1 }), 
-                        new[] { 0, 1});
-                    var dstSlicesBestFacePlusOne = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 1 }), 
-                        new[] { 1, 1});
-
-                    // Copy best face landmark
-                    var assignmentOp1 = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    assignmentOp1.SetOperand("src", bestFaceIndexMat);
-                    assignmentOp1.SetOperand("dst channel slice", dstSlicesBestFace);
-                    assignmentOp1.SetResult("dst", srcSlicesBestFace);
-
-                    var assignmentOp2 = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    assignmentOp2.SetOperand("src", bestFaceIndexPlusOne);
-                    assignmentOp2.SetOperand("dst channel slice", dstSlicesBestFacePlusOne);
-                    assignmentOp2.SetResult("dst", srcSlicesBestFace);
-
-                    var bestFaceLandmark = modelInferencePipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, 4 }));
-                    var assignmentOpBestFaceAnchors = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    assignmentOpBestFaceAnchors.SetOperand("src", ufoLandmarks);
-                    assignmentOpBestFaceAnchors.SetOperand("src slices", srcSlicesBestFace);
-                    assignmentOpBestFaceAnchors.SetResult("dst", bestFaceLandmark);
-
-                    // Create best face landmark int32 tensor and operator
-                    var bestFaceLandmarkInt32 = modelInferencePipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, 4 }));
-                    var assignmentOpBestFaceLandmarkInt32 = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    assignmentOpBestFaceLandmarkInt32.SetOperand("src", bestFaceLandmark);
-                    assignmentOpBestFaceLandmarkInt32.SetResult("dst", bestFaceLandmarkInt32);
-
-                    // Extract left eye UV coordinates
-                    var srcSliceLeftEyeUV = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), new[] { 0, 1, 0, 2 });
-                    // var dstChannelSliceLeftEyeUV = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 1 }), new[] { 0, 2 });
-                    var assignmentOpLeftEyeUV = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    assignmentOpLeftEyeUV.SetOperand("src", bestFaceLandmarkInt32);
-                    assignmentOpLeftEyeUV.SetOperand("src slices", srcSliceLeftEyeUV);
-                    // assignmentOpLeftEyeUV.SetOperand("dst channel slice", dstChannelSliceLeftEyeUV);
-                    assignmentOpLeftEyeUV.SetResult("dst", leftEyeUVPlaceholder);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Model inference pipeline creation failed: {e.Message}");
-                    mainThreadActions.Enqueue(() => pipelinesReady = false);
-                }
-            }
-        }
-
-        private void CreateMap2dTo3dPipeline()
-        {
-            try
-            {
-                map2dTo3dPipeline = provider.CreatePipeline();
-
-                // Step 1: Create pipeline placeholders
-                uvPlaceholder = map2dTo3dPipeline.CreateTensorReference<int, Point>(2, new TensorShape(new[] { 1 }));
-                vstTimestampPlaceholder1 = map2dTo3dPipeline.CreateTensorReference<int, TimeStamp>(4, new TensorShape(new[] { 1 }));
-                vstCameraMatrixPlaceholder1 = map2dTo3dPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] { 3, 3 }));
-                vstOutputLeftUint8Placeholder1 = map2dTo3dPipeline.CreateTensorReference<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-                vstOutputRightUint8Placeholder1 = map2dTo3dPipeline.CreateTensorReference<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-                map2dTo3dPositionPlaceholder = map2dTo3dPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
-
-                // Step 2: Create local tensors
-                var pointXYZ = map2dTo3dPipeline.CreateTensor<float, Point>(3, new TensorShape(new[] { 1 }));
-                var pintXYZMat = map2dTo3dPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 3, 1 }));
-                var pointXYZMultiplier = map2dTo3dPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 3, 1 }), 
-                    new float[] { 1.0f, -1.0f, 1.0f });
-                var offsetTensor = map2dTo3dPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 3, 1 }), 
-                    new float[] { 0.05f, 0.25f, -0.05f });
-                var rvecTensor = map2dTo3dPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 3, 1 }), 
-                    new float[] { 0.0f, 0.0f, 0.0f });
-                var svecTensor = map2dTo3dPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 3, 1 }), 
-                    new float[] { 0.1f, 0.1f, 0.1f });
-                var leftEyeTransform = map2dTo3dPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
-
-                // Step 3: Create and connect operators
-                var uv2CamOp = map2dTo3dPipeline.CreateOperator<UvTo3DInCameraSpaceOperator>();
-                uv2CamOp.SetOperand("uv", uvPlaceholder);
-                uv2CamOp.SetOperand("timestamp", vstTimestampPlaceholder1);
-                uv2CamOp.SetOperand("camera intrisic", vstCameraMatrixPlaceholder1);
-                uv2CamOp.SetOperand("left image", vstOutputLeftUint8Placeholder1);
-                uv2CamOp.SetOperand("right image", vstOutputRightUint8Placeholder1);
-                uv2CamOp.SetResult("point_xyz", pointXYZ);
-
-                var assignmentOp = map2dTo3dPipeline.CreateOperator<AssignmentOperator>();
-                assignmentOp.SetOperand("src", pointXYZ);
-                assignmentOp.SetResult("dst", pintXYZMat);
-
-                var elementwiseOp = map2dTo3dPipeline.CreateOperator<ElementwiseMultiplyOperator>();
-                elementwiseOp.SetOperand("operand0", pintXYZMat);
-                elementwiseOp.SetOperand("operand1", pointXYZMultiplier);
-                elementwiseOp.SetResult("result", pintXYZMat);
-
-                var arithmeticOp = map2dTo3dPipeline.CreateOperator<ArithmeticComposeOperator>(
-                    new ArithmeticComposeOperatorConfiguration("({0} + {1})"));
-                arithmeticOp.SetOperand("{0}", pintXYZMat);
-                arithmeticOp.SetOperand("{1}", offsetTensor);
-                arithmeticOp.SetResult("result", pintXYZMat);
-
-                var pipelineResult = map2dTo3dPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
-                var transformOp = map2dTo3dPipeline.CreateOperator<GetTransformMatrixOperator>();
-                transformOp.SetOperand("rotation", rvecTensor);
-                transformOp.SetOperand("translation", pintXYZMat);
-                transformOp.SetOperand("scale", svecTensor);
-                transformOp.SetResult("result", pipelineResult);
-
-                var camSpace2XrLocalOp = map2dTo3dPipeline.CreateOperator<CameraSpaceToWorldOperator>();
-                camSpace2XrLocalOp.SetOperand("timestamp", vstTimestampPlaceholder1);
-                camSpace2XrLocalOp.SetResult("left", leftEyeTransform);
-
-                var finalArithmeticOp = map2dTo3dPipeline.CreateOperator<ArithmeticComposeOperator>(
-                    new ArithmeticComposeOperatorConfiguration("({0} * {1})"));
-                finalArithmeticOp.SetOperand("{0}", leftEyeTransform);
-                finalArithmeticOp.SetOperand("{1}", pipelineResult);
-                finalArithmeticOp.SetResult("result", map2dTo3dPositionPlaceholder);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Map2dTo3d pipeline creation failed: {e.Message}");
-                mainThreadActions.Enqueue(() => pipelinesReady = false);
-            }
-        }
-
-        private void CreateRenderPipeline()
-        {
-            lock(pipelineLock)
-            {
-                try
-                {
-                    renderPipeline = provider.CreatePipeline();
-
-                    // Create pipeline placeholders
-                    currentPositionRead = renderPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
-                    previousPositionRead = renderPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
-                    var interpolatedPosition = renderPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
-
-                    // Create operators
-                    var arithmeticOp = renderPipeline.CreateOperator<ArithmeticComposeOperator>(
-                        new ArithmeticComposeOperatorConfiguration("({0} * 0.95 + {1} * 0.05)"));
-                    var assignmentOp1 = renderPipeline.CreateOperator<AssignmentOperator>();
-
-                    // Connect operators for smooth movement
-                    arithmeticOp.SetOperand("{0}", previousPositionRead);
-                    arithmeticOp.SetOperand("{1}", currentPositionRead);
-                    arithmeticOp.SetResult("result", interpolatedPosition);
-
-                    assignmentOp1.SetOperand("src", interpolatedPosition);
-                    assignmentOp1.SetResult("dst", previousPositionRead);
-
-                    // Create GLTF placeholder and position tensor references
-                    gltfPlaceholder = renderPipeline.CreateTensorReference<Gltf>();
-
-                    // Create render GLTF operator
-                    var renderGltfOperator = renderPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
-                    renderGltfOperator.SetOperand("gltf", gltfPlaceholder);
-                    renderGltfOperator.SetOperand("world pose", interpolatedPosition);
-                    // renderGltfOperator.SetOperand("is visible", isUfoDetposeTensorectedRead);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Render pipeline creation failed: {e.Message}");
-                    mainThreadActions.Enqueue(() => pipelinesReady = false);
-                }
-            }
-        }
         
-        private void RunVstPipeline()
-        {
-            var tensorMapping = new TensorMapping();
-            tensorMapping.Set(vstOutputLeftUint8Placeholder, vstOutputLeftUint8Global);
-            tensorMapping.Set(vstOutputRightUint8Placeholder, vstOutputRightUint8Global);
-            tensorMapping.Set(vstTimestampPlaceholder, vstTimestampGlobal);
-            tensorMapping.Set(vstCameraMatrixPlaceholder, vstCameraMatrixGlobal);
-            tensorMapping.Set(vstOutputLeftFp32Placeholder, vstOutputLeftFp32Global);
 
-            vstPipeline.Execute(tensorMapping);
+            // Connect the operators
+            vstOp.SetResult("left image", rawRgb);
+
+            getAffineOp.SetOperand("src", srcPoints);
+            getAffineOp.SetOperand("dst", dstPoints);
+            getAffineOp.SetResult("result", affineMat);
+
+            applyAffineOp.SetOperand("affine", affineMat);
+            applyAffineOp.SetOperand("src image", rawRgb);
+            applyAffineOp.SetResult("dst image", cropRgbWrite);
+
+            rgbToGrayOp.SetOperand("src", cropRgbWrite);
+            rgbToGrayOp.SetResult("dst", cropGray);
+
+            uint8ToFloat32Op.SetOperand("src", cropGray);
+            uint8ToFloat32Op.SetResult("dst", cropGrayFloat);
+
+            normalizeOp.SetOperand("{0}", cropGrayFloat);
+            normalizeOp.SetResult("result", inputTensor);
+        
+            Debug.Log("Pipeline created successfully.");
         }
 
-        private void RunModelInferencePipeline()
+        private void CreateRenderer()
         {
-            var tensorMapping = new TensorMapping();
-            tensorMapping.Set(vstImagePlaceholder, vstOutputLeftFp32Global);
-            tensorMapping.Set(leftEyeUVPlaceholder, leftEyeUVGlobal);
-            // tensorMapping.Set(isUfoDetectedWrite, isUfoDetectedGlobal);
+            if (provider == null)
+            {
+                Debug.LogError("Provider is not initialized.");
+                return;
+            }
 
-            modelInferencePipeline.Execute(tensorMapping);
+            Debug.Log("Creating renderer...");
+
+            // Create renderer pipeline
+            rendererPipeline = provider.CreatePipeline();
+
+            // Create operators
+            var renderTextOp = rendererPipeline.CreateOperator<RenderTextOperator>(
+                new RenderTextOperatorConfiguration(SecureMRFontTypeface.SansSerif, "en-US", 1440, 960));
+            var renderGltfOp = rendererPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
+            var renderTextOp2 = rendererPipeline.CreateOperator<RenderTextOperator>(
+                new RenderTextOperatorConfiguration(SecureMRFontTypeface.SansSerif, "en-US", 1440, 960));
+            var renderGltfOp2 = rendererPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
+            var renderGltfOp3 = rendererPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
+            var loadTextureOp = rendererPipeline.CreateOperator<LoadTextureOperator>();
+            var materialBaseColorTextureConfig = new UpdateGltfOperatorConfiguration(SecureMRGltfOperatorAttribute.MaterialBaseColorTexture);
+            var updateGltfOp = rendererPipeline.CreateOperator<UpdateGltfOperator>(materialBaseColorTextureConfig);
+
+            // Create tensors
+            var text = rendererPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
+                Encoding.UTF8.GetBytes("MNIST Demo"));
+            var startPosition = rendererPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
+                new float[] { 0.1f, 0.3f });
+            var colors = rendererPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
+                new byte[] { 255, 255, 255, 255, 0, 0, 0, 255 }); // white text, black background
+            var textureId = rendererPipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }),
+                new ushort[] { 0 });
+            var fontSize = rendererPipeline.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }),
+                new float[] { 144.0f });
+            var poseMat = rendererPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }),
+                new float[]
+                {
+                    0.5f, 0.0f, 0.0f, -0.5f,
+                    0.0f, 0.5f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.5f, -1.5f,
+                    0.0f, 0.0f, 0.0f, 1.0f
+                });
+
+            var text2 = rendererPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
+                Encoding.UTF8.GetBytes("Score"));
+            var startPosition2 = rendererPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
+                new float[] { 0.1f, 0.3f });
+            var colors2 = rendererPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
+                new byte[] { 255, 255, 255, 255, 0, 0, 0, 255 });
+            var textureId2 = rendererPipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }),
+                new ushort[] { 0 });
+            var fontSize2 = rendererPipeline.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }),
+                new float[] { 144.0f });
+            var poseMat2 = rendererPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }),
+                new float[]
+                {
+                    0.5f, 0.0f, 0.0f, 0.5f,
+                    0.0f, 0.5f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.5f, -1.5f,
+                    0.0f, 0.0f, 0.0f, 1.0f
+                });
+
+            var poseMat3 = rendererPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }),
+                new float[]
+                {
+                    0.5f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 0.5f, 0.0f, 1.0f,
+                    0.0f, 0.0f, 0.5f, -1.5f,
+                    0.0f, 0.0f, 0.0f, 1.0f
+                });
+
+            // Create placeholder tensors
+            gltfPlaceholder = rendererPipeline.CreateTensorReference<Gltf>();
+            gltfPlaceholder2 = rendererPipeline.CreateTensorReference<Gltf>();
+            gltfPlaceholder3 = rendererPipeline.CreateTensorReference<Gltf>();
+
+            predClassRead = rendererPipeline.CreateTensorReference<int, Scalar>(1, new TensorShape(new[] {1}));
+            predScoreRead = rendererPipeline.CreateTensorReference<float, Scalar>(1, new TensorShape(new[] {1}));
+            cropRgbRead = rendererPipeline.CreateTensorReference<byte, Matrix>(3, new TensorShape(new[] {cropWidth, cropHeight}));
+
+            var gltfMaterialIndex = rendererPipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }),
+                new ushort[] { 0 });
+            var gltfTextureIndex = rendererPipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }));
+
+            // Create global GLTF tensors
+            gltfTensor = provider.CreateTensor<Gltf>(frameGltfAsset.bytes);
+            gltfTensor2 = provider.CreateTensor<Gltf>(frameGltfAsset.bytes);
+            gltfTensor3 = provider.CreateTensor<Gltf>(frameGltfAsset.bytes);
+
+            // Connect the operators
+            renderTextOp.SetOperand("text", predClassRead);
+            renderTextOp.SetOperand("start", startPosition);
+            renderTextOp.SetOperand("colors", colors);
+            renderTextOp.SetOperand("texture ID", textureId);
+            renderTextOp.SetOperand("font size", fontSize);
+            renderTextOp.SetOperand("gltf", gltfPlaceholder);
+
+            renderGltfOp.SetOperand("gltf", gltfPlaceholder);
+            renderGltfOp.SetOperand("world pose", poseMat);
+            renderGltfOp.SetOperand("view locked", poseMat);
+
+            renderTextOp2.SetOperand("text", predScoreRead);
+            renderTextOp2.SetOperand("start", startPosition2);
+            renderTextOp2.SetOperand("colors", colors2);
+            renderTextOp2.SetOperand("texture ID", textureId2);
+            renderTextOp2.SetOperand("font size", fontSize2);
+            renderTextOp2.SetOperand("gltf", gltfPlaceholder2);
+
+            renderGltfOp2.SetOperand("gltf", gltfPlaceholder2);
+            renderGltfOp2.SetOperand("world pose", poseMat2);
+            renderGltfOp2.SetOperand("view locked", poseMat2);
+
+            loadTextureOp.SetOperand("rgb image", cropRgbRead);
+            loadTextureOp.SetOperand("gltf", gltfPlaceholder3);
+            loadTextureOp.SetResult("texture ID", gltfTextureIndex);
+
+            updateGltfOp.SetOperand("gltf", gltfPlaceholder3);
+            updateGltfOp.SetOperand("material ID", gltfMaterialIndex);
+            updateGltfOp.SetOperand("value", gltfTextureIndex);
+
+            renderGltfOp3.SetOperand("gltf", gltfPlaceholder3);
+            renderGltfOp3.SetOperand("world pose", poseMat3);
+            renderGltfOp3.SetOperand("view locked", poseMat3);
+
+            Debug.Log("Renderer created successfully.");
         }
 
-        private void RunMap2dTo3dPipeline()
+        private void RunPipeline()
         {
-            var tensorMapping = new TensorMapping();
-            tensorMapping.Set(uvPlaceholder, leftEyeUVGlobal);
-            tensorMapping.Set(vstOutputLeftUint8Placeholder1, vstOutputLeftUint8Global);
-            tensorMapping.Set(vstOutputRightUint8Placeholder1, vstOutputRightUint8Global);
-            tensorMapping.Set(vstTimestampPlaceholder1, vstTimestampGlobal);
-            tensorMapping.Set(vstCameraMatrixPlaceholder1, vstCameraMatrixGlobal);
-            tensorMapping.Set(map2dTo3dPositionPlaceholder, currentPositionGlobal);
+            Debug.Log("Running pipeline...");
 
-            map2dTo3dPipeline.Execute(tensorMapping);
+            var tensorMapping = new TensorMapping();
+            tensorMapping.Set(predClassWrite, predClassGlobal);
+            tensorMapping.Set(predScoreWrite, predScoreGlobal);
+            tensorMapping.Set(cropRgbWrite, cropRgbGlobal);
+
+            pipeline.Execute(tensorMapping);
         }
 
-        private void RunRenderPipeline()
+        private void RenderFrame()
         {
+            Debug.Log("Rendering frame...");
+
             var tensorMapping = new TensorMapping();
-            tensorMapping.Set(previousPositionRead, previousPositionGlobal);
-            tensorMapping.Set(currentPositionRead, currentPositionGlobal);
             tensorMapping.Set(gltfPlaceholder, gltfTensor);
-            // tensorMapping.Set(isUfoDetectedRead, isUfoDetectedGlobal);
+            tensorMapping.Set(gltfPlaceholder2, gltfTensor2);
+            tensorMapping.Set(gltfPlaceholder3, gltfTensor3);
+            tensorMapping.Set(predClassRead, predClassGlobal);
+            tensorMapping.Set(predScoreRead, predScoreGlobal);
+            tensorMapping.Set(cropRgbRead, cropRgbGlobal);
 
-            renderPipeline.Execute(tensorMapping);
+            rendererPipeline.Execute(tensorMapping);
         }
     }
 }
