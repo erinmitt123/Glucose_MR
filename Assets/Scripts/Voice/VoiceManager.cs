@@ -18,9 +18,10 @@ public class VoiceManager : MonoBehaviour
 
     [Header("Controller References")]
     [SerializeField] private InputActionAsset inputActions;
-    [SerializeField] private InputActionReference startMicAction;
+    [SerializeField] private InputActionReference micAction;
 
     private bool _inited = false;
+    private bool _isMicOn = false;
 
 
     private void Awake()
@@ -133,26 +134,37 @@ public class VoiceManager : MonoBehaviour
                 return;
             }
 
-            SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
-            Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
+            if (!_isMicOn)
+            {
+                SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
+                Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
+                _isMicOn = true;
+            }
+            else
+            {
+                SpeechService.StopAsr();
+                Debug.Log("engine stopped");
+                _isMicOn = false;
+            }
+            
         }
     }
 
     private void OnEnable()
     {
-        if (startMicAction != null)
+        if (micAction != null)
         {
-            startMicAction.action.performed += OnMicButtonPressed;
-            startMicAction.action.Enable();
+            micAction.action.started += OnMicButtonPressed;
+            micAction.action.Enable();
         }
     }
 
     private void OnDisable()
     {
-        if (startMicAction != null)
+        if (micAction != null)
         {
-            startMicAction.action.performed -= OnMicButtonPressed;
-            startMicAction.action.Disable();
+            micAction.action.started -= OnMicButtonPressed;
+            micAction.action.Disable();
         }       
     }
 
