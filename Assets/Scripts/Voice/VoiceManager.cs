@@ -1,0 +1,159 @@
+using Pico.Platform;
+using TMPro;
+using UnityEngine.Android;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.InputSystem;
+
+
+public class VoiceManager : MonoBehaviour
+{
+    public TMP_Text textAsrResult;
+
+    [Header("Parameters")]
+    [SerializeField] private int maxDuration = 8;
+    [SerializeField] private bool autoStop = true;
+    [SerializeField] private bool showPunctuation = true;
+
+    [Header("Controller References")]
+    [SerializeField] private InputActionAsset inputActions;
+    [SerializeField] private InputActionReference startMicAction;
+
+    private bool _inited = false;
+
+
+    private void Awake()
+    {
+
+        CoreService.Initialize();
+
+        PermissionCheck();
+
+        SetCallbacks();
+
+        InitializeAsrEngine();
+    }
+
+
+    // Checks if necessary permissions have been granted for using the speech service
+    private void PermissionCheck()
+    {
+        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+        {
+            Permission.RequestUserPermission(Permission.Microphone);
+        }
+
+        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
+        {
+            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+        }
+    }
+
+    // Sets callback messages and result logging for Speech Service
+    private void SetCallbacks()
+    {
+        SpeechService.SetOnAsrResultCallback(msg =>
+        {
+            var m = msg.Data;
+            Debug.Log($"text={m.Text} isFinal={m.IsFinalResult}");
+            textAsrResult.SetText($"[{m.IsFinalResult}]{m.Text}");
+        });
+        SpeechService.SetOnSpeechErrorCallback(msg =>
+        {
+            var m = msg.Data;
+            Debug.Log($"SpeechError :{JsonUtility.ToJson(m)}");
+        });
+    }
+
+    private void InitializeAsrEngine()
+    {
+        var res = SpeechService.InitAsrEngine();
+        if (res != AsrEngineInitResult.Success)
+        {
+            Debug.Log($"Init ASR Engine failed :{res}");
+            textAsrResult.SetText($"init failed {res}");
+        }
+        else
+        {
+            _inited = true;
+            Debug.Log("Init engine successfully.");
+            textAsrResult.SetText($"Init successfully");
+        }
+    }
+
+
+    private void Start()
+    {
+
+        //// Start Button
+        //buttonStart.onClick.AddListener(() =>
+        //{
+        //    if (!_inited)
+        //    {
+        //        Debug.Log($"Please init before start ASR");
+        //        textAsrResult.SetText("Please init engine first");
+        //        return;
+        //    }
+
+        //    //bool autoStop = toggleAutoStop.isOn;
+        //    //bool showPunctual = toggleShowPunctual.isOn;
+        //    //int.TryParse(inputMaxDuration.text, out var maxDuration);
+
+        //    SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
+        //    Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
+        //});
+
+        //// Stop Button 
+        //buttonStop.onClick.AddListener(() =>
+        //{
+        //    if (!_inited)
+        //    {
+        //        Debug.Log($"Please init before start ASR");
+        //        textAsrResult.SetText("Please init engine first");
+        //        return;
+        //    }
+
+        //    SpeechService.StopAsr();
+        //    Debug.Log("engine stopped");
+        //});
+
+
+    }
+
+    public void OnMicButtonPressed(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            Debug.Log("Grip Button Pressed");
+
+            if (!_inited)
+            {
+                Debug.Log($"Please init before start ASR");
+                textAsrResult.SetText("Please init engine first");
+                return;
+            }
+
+            SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
+            Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (startMicAction != null)
+        {
+            startMicAction.action.performed += OnMicButtonPressed;
+            startMicAction.action.Enable();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (startMicAction != null)
+        {
+            startMicAction.action.performed -= OnMicButtonPressed;
+            startMicAction.action.Disable();
+        }       
+    }
+
+}
