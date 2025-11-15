@@ -3339,6 +3339,28 @@
                     "action": "StartMic",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "baa5deea-d0c7-4ced-a72d-1586025a5828",
+                    "path": "<PXR_Controller>/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "StartMic",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "818117fb-0480-44db-8207-4eacf757706c",
+                    "path": "<PXR_PTController>/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "StartMic",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

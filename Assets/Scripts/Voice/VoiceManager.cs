@@ -8,7 +8,8 @@ using UnityEngine.InputSystem;
 
 public class VoiceManager : MonoBehaviour
 {
-    public TMP_Text textAsrResult;
+    public TMP_Text displayAsrResult;
+    public string storedAsrResult;
 
     [Header("Parameters")]
     [SerializeField] private int maxDuration = 8;
@@ -55,8 +56,10 @@ public class VoiceManager : MonoBehaviour
         SpeechService.SetOnAsrResultCallback(msg =>
         {
             var m = msg.Data;
+            storedAsrResult = m.Text;
+
             Debug.Log($"text={m.Text} isFinal={m.IsFinalResult}");
-            textAsrResult.SetText($"[{m.IsFinalResult}]{m.Text}");
+            displayAsrResult.SetText($"[{m.IsFinalResult}]{m.Text}");
         });
         SpeechService.SetOnSpeechErrorCallback(msg =>
         {
@@ -71,13 +74,11 @@ public class VoiceManager : MonoBehaviour
         if (res != AsrEngineInitResult.Success)
         {
             Debug.Log($"Init ASR Engine failed :{res}");
-            textAsrResult.SetText($"init failed {res}");
         }
         else
         {
             _inited = true;
             Debug.Log("Init engine successfully.");
-            textAsrResult.SetText($"Init successfully");
         }
     }
 
@@ -129,7 +130,6 @@ public class VoiceManager : MonoBehaviour
             if (!_inited)
             {
                 Debug.Log($"Please init before start ASR");
-                textAsrResult.SetText("Please init engine first");
                 return;
             }
 
