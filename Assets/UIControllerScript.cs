@@ -1,22 +1,34 @@
+using System;
 using TMPro;
 using UnityEngine;
 
 public class UIControllerScript : MonoBehaviour
 {
-    bool isTypeOne = false;
-   
-    void Start()
-    {
-        
-    }
+    public GameObject diabetesCanvas;
+    public GameObject foodCanvas;
+    public bool isTypeOne = true;
 
-    // Update is called once per frame
+    [SerializeField] private TMP_InputField inputField;
+    public event Action OnNonEmpty;
+    public event Action OnEmpty;
+
+    private bool wasEmpty = true;
+
+
     public void OnTypeTwoClicked()
     {
-        isTypeOne = true;
+        isTypeOne = false;
+        setupGlucoseCanvas();
     }
     public void OnTypeOneClicked()
     {
-        isTypeOne = false;
+        isTypeOne = true;
+        setupGlucoseCanvas();
     }
+    public void setupGlucoseCanvas()
+    {
+        diabetesCanvas.SetActive(false);
+        foodCanvas.SetActive(true);
+    }
+
 }

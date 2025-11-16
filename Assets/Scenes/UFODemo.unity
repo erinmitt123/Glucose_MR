@@ -659,7 +659,7 @@ MonoBehaviour:
   adaptiveResolution: 0
   eyeFoveationLevel: -1
   foveatedRenderingMode: 0
-  openMRC: 0
+  openMRC: 1
   foregroundLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295

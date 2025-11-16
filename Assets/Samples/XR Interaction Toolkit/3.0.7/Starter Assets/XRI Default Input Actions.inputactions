@@ -3313,6 +3313,45 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "XR Dual Interaction",
+            "id": "23346fbe-7c49-4fa5-919e-18154ba4aeab",
+            "actions": [
+                {
+                    "name": "MicPress",
+                    "type": "Button",
+                    "id": "fd307b1e-b871-482b-9963-bf934b8a4f94",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b1bda86f-9e93-4892-9726-47bb5a1a2cee",
+                    "path": "<XRController>/{GripButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MicPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "baa5deea-d0c7-4ced-a72d-1586025a5828",
+                    "path": "<PXR_Controller>/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MicPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

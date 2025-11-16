@@ -219,7 +219,7 @@ namespace PicoXR.SecureMR.Demo
             // colorGlobal.Reset(new float[] { Random.value, Random.value, Random.value, 1.0f }); 
  
             var tensorMapping = new TensorMapping();
-            tensorMapping.Set(pickedColorPlaceholder, colorGlobal);
+          //  tensorMapping.Set(pickedColorPlaceholder, colorGlobal);
  
             readerPipeline.ExecuteAfter(pipelineRun, tensorMapping);
             
@@ -227,7 +227,7 @@ namespace PicoXR.SecureMR.Demo
         }
         
         // Update is called once per frame
-        void Update()
+       /* void Update()
         {
             var pipelineRun = RenderFrame();
             elapsed += Time.deltaTime;
@@ -237,6 +237,6 @@ namespace PicoXR.SecureMR.Demo
                 PickColor(pipelineRun);
             }
             
-        }
+        }*/
     }
 }
