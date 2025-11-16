@@ -18,7 +18,7 @@ public class FoodInfo : MonoBehaviour
     public TMP_Text sugar;
     public TMP_Text addedSugars;
     public double glucoseVal;
-    private bool isTypeOne=true;
+    private bool isTypeOne;
     Dictionary<string, int> dictFoods;
 
     //values retreived from database
@@ -28,12 +28,8 @@ public class FoodInfo : MonoBehaviour
     public Sprite[] emojiDatabase;
     public TMP_Text grade;
     public Image emoji; // drag object with GlucoseData onto this
+    public UIControllerScript other;   // drag the GameObject here in Inspector
 
-    public void GetGlucose()
-    {
-        //glucoseVal = ApplicationManager.Instance.glucoseLevel;
-        //isTypeOne=ApplicationManager.Instance.isTypeOne;
-    }
 
     internal void SetDict(Dictionary<string, int> map)
     {
@@ -44,9 +40,9 @@ public class FoodInfo : MonoBehaviour
     {
         throw new NotImplementedException();
     }
-    bool TryGetStringForInt(Dictionary<string, int> dict, int value, out string result)
+    bool TryGetStringForInt(int value, out string result)
     {
-        foreach (var pair in dict)
+        foreach (var pair in dictFoods)
         {
             if (pair.Value == value)
             {
@@ -61,7 +57,7 @@ public class FoodInfo : MonoBehaviour
 
     private string GetStringForInt(int targetValue)
     {
-        if (TryGetStringForInt(dictFoods, targetValue, out string name))
+        if (TryGetStringForInt(targetValue, out string name))
         {
             Debug.Log("Found:   " + name);
         }
@@ -74,7 +70,8 @@ public class FoodInfo : MonoBehaviour
 
     public void SetValues(double[] values)
     {
-     secureMLValues = values;
+        isTypeOne = other.isTypeOne;
+        secureMLValues = values;
      Debug.Log("FoodInfo received " + values.Length + " values.");
      food.text = "Food: "+  GetStringForInt((int)secureMLValues[8]);
      carbs.text = "Carbs: " + secureMLValues[1].ToString();
@@ -97,7 +94,7 @@ public class FoodInfo : MonoBehaviour
         {
             string letterGrade = CalculateGrade(score);
             ChooseColor(letterGrade);
-            grade.text = "Score: " + score.ToString() + "%, " + letterGrade;
+            grade.text = "Score: " + score.ToString() + "%, Grade: " + letterGrade;
         }
 
      foreach (double value in secureMLValues)

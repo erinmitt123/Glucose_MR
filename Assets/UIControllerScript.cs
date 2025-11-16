@@ -17,12 +17,12 @@ public class UIControllerScript : MonoBehaviour
 
     public void OnTypeTwoClicked()
     {
-        isTypeOne = true;
+        isTypeOne = false;
         setupGlucoseCanvas();
     }
     public void OnTypeOneClicked()
     {
-        isTypeOne = false;
+        isTypeOne = true;
         setupGlucoseCanvas();
     }
     public void setupGlucoseCanvas()

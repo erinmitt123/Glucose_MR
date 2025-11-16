@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CsvToDictionary : MonoBehaviour
 {
-    public TextAsset csvFile;  // drag your .csv into inspector
+    public TextAsset csvFileDict;
     public FoodInfo foodInfo;
 
 
@@ -12,7 +12,7 @@ public class CsvToDictionary : MonoBehaviour
     {
         Dictionary<string, int> dict = new Dictionary<string, int>();
 
-        string[] lines = csvFile.text.Split('\n');
+        string[] lines = csvFileDict.text.Split('\n');
 
         foreach (string line in lines)
         {
