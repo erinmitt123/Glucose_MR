@@ -10,7 +10,7 @@ public class CsvToDoubleArray : MonoBehaviour
     void Start()
     {
         double[][] data = ParseCsv(csvFile.text);
-        foodInfo.SetValues(data[3]);
+        foodInfo.SetValues(data[7]);
     }
 
     public double[][] ParseCsv(string csvText)

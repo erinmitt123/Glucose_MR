@@ -5,6 +5,7 @@ using System.Globalization;
 public class ApplicationManager : MonoBehaviour
 {
     public static ApplicationManager Instance { get; private set; }
+    public FoodInfo foodInfo;
 
     [SerializeField] VoiceManager voiceManager;
 
@@ -47,6 +48,8 @@ public class ApplicationManager : MonoBehaviour
         if (number != null)
         {
             glucoseLevel = (double)number;
+            foodInfo.UpdateValues();
+
             Debug.Log($"Voice Parsing Success: the glucose level is {glucoseLevel}");
         }
         else

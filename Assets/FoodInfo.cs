@@ -15,6 +15,7 @@ public class FoodInfo : MonoBehaviour
     public TMP_Text protein;
     public TMP_Text sugar;
     public TMP_Text addedSugars;
+    public TMP_Text glucose;
     public double glucoseVal;
     private bool isTypeOne=true;
 
@@ -31,22 +32,29 @@ public class FoodInfo : MonoBehaviour
         glucoseVal = ApplicationManager.Instance.glucoseLevel;
         //isTypeOne=ApplicationManager.Instance.isTypeOne;
     }
+
     public void SetValues(double[] values)
     {
-     secureMLValues = values;
-     Debug.Log("FoodInfo received " + values.Length + " values.");
-     food.text = "Food: "+secureMLValues[0].ToString();
-     carbs.text = "Carbs: " + secureMLValues[1].ToString();
-     fats.text = "Fats: " + secureMLValues[2].ToString();
-     fiber.text = "Fiber: " + secureMLValues[3].ToString();
-     protein.text = "Protein: " + secureMLValues[4].ToString();
-     sugar.text = "Sugar: " + secureMLValues[5].ToString();
-        if (secureMLValues[6] < 0){
+        secureMLValues = values;
+        GetGlucose();
+        
+        Debug.Log("FoodInfo received " + values.Length + " values.");
+        food.text = "Food: "+secureMLValues[0].ToString();
+        carbs.text = "Carbs: " + secureMLValues[1].ToString();
+        fats.text = "Fats: " + secureMLValues[2].ToString();
+        fiber.text = "Fiber: " + secureMLValues[3].ToString();
+        protein.text = "Protein: " + secureMLValues[4].ToString();
+        sugar.text = "Sugar: " + secureMLValues[5].ToString();
+        glucose.text = $"{ApplicationManager.Instance.glucoseLevel}";
+
+        if (secureMLValues[6] < 0)
+        {
             secureMLValues[6] = 0;
         }
-     addedSugars.text = "Added Sugars: " + secureMLValues[6].ToString();
-     perUnit.text = "Per 100g"; //+ secureMLValues[7].ToString();
-            double score = CalculateScore(secureMLValues, glucoseVal);
+
+        addedSugars.text = "Added Sugars: " + secureMLValues[6].ToString();
+        perUnit.text = "Per 100g"; //+ secureMLValues[7].ToString();
+        double score = CalculateScore(secureMLValues, glucoseVal);
 
         if (isTypeOne)
         {
@@ -59,11 +67,13 @@ public class FoodInfo : MonoBehaviour
             grade.text = "Score: " + score.ToString() + "%, " + letterGrade;
         }
 
-     foreach (double value in secureMLValues)
-     {
-         Debug.Log(value);
-     }
- }
+        foreach (double value in secureMLValues)
+        {
+            Debug.Log(value);
+        }
+    }
+
+    public void UpdateValues() => SetValues(secureMLValues);
 
     private void TypeOneHelper(double score)
     {
