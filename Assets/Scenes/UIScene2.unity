@@ -1239,7 +1239,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1899216638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4123,7 +4123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d82d56d26ccd37b4a9439d30ff2a1817, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  csvFile: {fileID: 4900000, guid: b13205f50a54fde4aa12cccb475c3dec, type: 3}
+  csvFileDict: {fileID: 0}
   foodInfo: {fileID: 6608239411428183612}
 --- !u!114 &6640002710935096923
 MonoBehaviour:

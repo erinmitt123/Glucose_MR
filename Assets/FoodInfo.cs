@@ -11,6 +11,7 @@ public class FoodInfo : MonoBehaviour
     //values that are set based on database values
     public TMP_Text food;
     public TMP_Text perUnit;
+    public TMP_Text glucose;
     public TMP_Text carbs;
     public TMP_Text fats;
     public TMP_Text fiber;
@@ -72,19 +73,25 @@ public class FoodInfo : MonoBehaviour
     {
         isTypeOne = other.isTypeOne;
         secureMLValues = values;
-     Debug.Log("FoodInfo received " + values.Length + " values.");
-     food.text = "Food: "+  GetStringForInt((int)secureMLValues[8]);
-     carbs.text = "Carbs: " + secureMLValues[1].ToString();
-     fats.text = "Fats: " + secureMLValues[2].ToString();
-     fiber.text = "Fiber: " + secureMLValues[3].ToString();
-     protein.text = "Protein: " + secureMLValues[4].ToString();
-     sugar.text = "Sugar: " + secureMLValues[5].ToString();
-        if (secureMLValues[6] < 0){
+        glucoseVal = ApplicationManager.Instance.glucoseLevel;
+
+        Debug.Log("FoodInfo received " + values.Length + " values.");
+        food.text = "Food: "+  GetStringForInt((int)secureMLValues[8]);
+        carbs.text = "Carbs: " + secureMLValues[1].ToString();
+        fats.text = "Fats: " + secureMLValues[2].ToString();
+        fiber.text = "Fiber: " + secureMLValues[3].ToString();
+        protein.text = "Protein: " + secureMLValues[4].ToString();
+        sugar.text = "Sugar: " + secureMLValues[5].ToString();
+        glucose.text = $"Glucose: ${glucoseVal}";
+
+        if (secureMLValues[6] < 0)
+        {
             secureMLValues[6] = 0;
         }
-     addedSugars.text = "Added Sugars: " + secureMLValues[6].ToString();
-     perUnit.text = "Per 100g"; //+ secureMLValues[7].ToString();
-            double score = CalculateScore(secureMLValues, glucoseVal);
+
+        addedSugars.text = "Added Sugars: " + secureMLValues[6].ToString();
+        perUnit.text = "Per 100g"; //+ secureMLValues[7].ToString();
+        double score = CalculateScore(secureMLValues, glucoseVal);
 
         if (isTypeOne)
         {
@@ -97,11 +104,13 @@ public class FoodInfo : MonoBehaviour
             grade.text = "Score: " + score.ToString() + "%, Grade: " + letterGrade;
         }
 
-     foreach (double value in secureMLValues)
-     {
-         Debug.Log(value);
-     }
- }
+        foreach (double value in secureMLValues)
+        {
+            Debug.Log(value);
+        }
+    }
+
+    public void UpdateValues() => SetValues(secureMLValues);
 
     private void TypeOneHelper(double score)
     {
