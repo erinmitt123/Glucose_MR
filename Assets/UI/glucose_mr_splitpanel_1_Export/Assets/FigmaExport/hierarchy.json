@@ -1,0 +1,162 @@
+{
+  "id": "3:22",
+  "name": "glucose_mr_splitpanel 1",
+  "type": "FRAME",
+  "children": [
+    {
+      "id": "3:27",
+      "name": "What Type of Diabetes do you have?",
+      "type": "TEXT",
+      "children": [],
+      "components": [
+        {
+          "component": "RectTransform",
+          "width": 866,
+          "height": 61,
+          "x": 107,
+          "y": -1033,
+          "rotation": 0
+        },
+        {
+          "component": "Text",
+          "text": "What Type of Diabetes do you have? ",
+          "font": "Inter",
+          "fontWeight": "Regular",
+          "fontSize": 50,
+          "color": {
+            "r": 0.03921568766236305,
+            "g": 0.10196078568696976,
+            "b": 0.22745098173618317,
+            "a": 1
+          },
+          "horizontalAlign": "CENTER",
+          "verticalAlign": "TOP"
+        }
+      ]
+    },
+    {
+      "id": "3:28",
+      "name": "Vector",
+      "type": "VECTOR",
+      "children": [],
+      "components": [
+        {
+          "component": "RectTransform",
+          "width": 420,
+          "height": 140,
+          "x": 330,
+          "y": -1183,
+          "rotation": 0
+        },
+        {
+          "component": "Image",
+          "sourceImage": "image_3_28.png",
+          "color": {
+            "r": 0.0784313753247261,
+            "g": 0.16470588743686676,
+            "b": 0.3490196168422699,
+            "a": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "3:29",
+      "name": "Diabetes 1",
+      "type": "TEXT",
+      "children": [],
+      "components": [
+        {
+          "component": "RectTransform",
+          "width": 267,
+          "height": 65,
+          "x": 406.5,
+          "y": -1209,
+          "rotation": 0
+        },
+        {
+          "component": "Text",
+          "text": "Diabetes 1 ",
+          "font": "Inter",
+          "fontWeight": "Regular",
+          "fontSize": 54,
+          "color": {
+            "r": 1,
+            "g": 0.6352941393852234,
+            "b": 0.29019609093666077,
+            "a": 1
+          },
+          "horizontalAlign": "CENTER",
+          "verticalAlign": "TOP"
+        }
+      ]
+    },
+    {
+      "id": "3:30",
+      "name": "Vector",
+      "type": "VECTOR",
+      "children": [],
+      "components": [
+        {
+          "component": "RectTransform",
+          "width": 420,
+          "height": 140,
+          "x": 330,
+          "y": -1373,
+          "rotation": 0
+        },
+        {
+          "component": "Image",
+          "sourceImage": "image_3_30.png",
+          "color": {
+            "r": 0.0784313753247261,
+            "g": 0.16470588743686676,
+            "b": 0.3490196168422699,
+            "a": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "3:31",
+      "name": "Diabetes 2",
+      "type": "TEXT",
+      "children": [],
+      "components": [
+        {
+          "component": "RectTransform",
+          "width": 274,
+          "height": 65,
+          "x": 403,
+          "y": -1399,
+          "rotation": 0
+        },
+        {
+          "component": "Text",
+          "text": "Diabetes 2 ",
+          "font": "Inter",
+          "fontWeight": "Regular",
+          "fontSize": 54,
+          "color": {
+            "r": 1,
+            "g": 0.6352941393852234,
+            "b": 0.29019609093666077,
+            "a": 1
+          },
+          "horizontalAlign": "CENTER",
+          "verticalAlign": "TOP"
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "component": "RectTransform",
+      "width": 1080,
+      "height": 1920,
+      "x": -266,
+      "y": 1796,
+      "rotation": 0
+    }
+  ]
+}
