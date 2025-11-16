@@ -1977,6 +1977,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3089171574421804273, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: displayAsrResult
+      value: 
+      objectReference: {fileID: 1729001514}
     - target: {fileID: 7227106005070564799, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
       propertyPath: m_Name
       value: ApplicationManager

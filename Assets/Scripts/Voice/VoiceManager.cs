@@ -28,7 +28,7 @@ public class VoiceManager : MonoBehaviour
 
         CoreService.Initialize();
 
-        PermissionCheck();
+        RequestPermissions();
 
         SetCallbacks();
 
@@ -37,8 +37,16 @@ public class VoiceManager : MonoBehaviour
 
 
     // Checks if necessary permissions have been granted for using the speech service
-    private void PermissionCheck()
+    private void RequestPermissions()
     {
+        // Utilities to access Java objects
+        //AndroidJavaObject javaObj = new AndroidJavaObject("applicationpermissions.AndroidPermissions");
+        //AndroidJavaClass jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        //AndroidJavaObject jo = jc.GetStatic<AndroidJavaObject>("currentActivity");
+        //javaObj.Call("setUnityActivity", jo);
+        //javaObj.Call("requestExternalStorage");
+        
+        // Unity permissions requests
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
         {
             Debug.Log("Permission wasn't given for mic");
