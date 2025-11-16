@@ -8,7 +8,7 @@ public class ApplicationManager : MonoBehaviour
 
     [SerializeField] VoiceManager voiceManager;
 
-    public float glucoseLevel = 100f;
+    public double glucoseLevel = 100.00;
 
     private string regexPattern = @"\d+(\.\d+)?";
 
@@ -42,12 +42,11 @@ public class ApplicationManager : MonoBehaviour
             return;
         }
 
-        Match match = Regex.Match(voiceManager.storedAsrResult, regexPattern);
-        if (match.Success)
-        {
-            string floatString = match.Value;
-            glucoseLevel = float.Parse(floatString, CultureInfo.InvariantCulture);
+        var number = Utils.GetDoubleFromNonnumericalSentence(voiceManager.storedAsrResult);
 
+        if (number != null)
+        {
+            glucoseLevel = (double)number;
             Debug.Log($"Voice Parsing Success: the glucose level is {glucoseLevel}");
         }
         else

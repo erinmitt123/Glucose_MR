@@ -7,7 +7,6 @@ using UnityEngine.InputSystem;
 
 public class VoiceManager : MonoBehaviour
 {
-    public TMP_Text displayAsrResult;
     public string storedAsrResult;
 
     [Header("Parameters")]
@@ -25,7 +24,6 @@ public class VoiceManager : MonoBehaviour
 
     private void Awake()
     {
-
         CoreService.Initialize();
 
         RequestPermissions();
@@ -67,10 +65,9 @@ public class VoiceManager : MonoBehaviour
         {
             Debug.Log("ASR Result Callback done successfully");
             var m = msg.Data;
-            storedAsrResult = m.Text;
 
+            storedAsrResult = m.Text;
             Debug.Log($"text={m.Text} isFinal={m.IsFinalResult}");
-            displayAsrResult.SetText($"[{m.IsFinalResult}]{m.Text}");
         });
         SpeechService.SetOnSpeechErrorCallback(msg =>
         {
@@ -91,45 +88,6 @@ public class VoiceManager : MonoBehaviour
             _inited = true;
             Debug.Log("Init engine successfully.");
         }
-    }
-
-
-    private void Start()
-    {
-
-        //// Start Button
-        //buttonStart.onClick.AddListener(() =>
-        //{
-        //    if (!_inited)
-        //    {
-        //        Debug.Log($"Please init before start ASR");
-        //        textAsrResult.SetText("Please init engine first");
-        //        return;
-        //    }
-
-        //    //bool autoStop = toggleAutoStop.isOn;
-        //    //bool showPunctual = toggleShowPunctual.isOn;
-        //    //int.TryParse(inputMaxDuration.text, out var maxDuration);
-
-        //    SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
-        //    Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
-        //});
-
-        //// Stop Button 
-        //buttonStop.onClick.AddListener(() =>
-        //{
-        //    if (!_inited)
-        //    {
-        //        Debug.Log($"Please init before start ASR");
-        //        textAsrResult.SetText("Please init engine first");
-        //        return;
-        //    }
-
-        //    SpeechService.StopAsr();
-        //    Debug.Log("engine stopped");
-        //});
-
-
     }
 
     public void OnMicButtonPressed(InputAction.CallbackContext context)
@@ -155,6 +113,8 @@ public class VoiceManager : MonoBehaviour
                 SpeechService.StopAsr();
                 Debug.Log("engine stopped");
                 _isMicOn = false;
+
+                ApplicationManager.Instance.ParseGlucoseLevelFromVoice();
             }
             
         }
