@@ -286,14 +286,15 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.picoxr": {
-      "version": "file:/Users/liviaellen/Desktop/Personal/PICO/PICO Unity Integration SDK-3.3.2-20251111",
+      "version": "https://github.com/Pico-Developer/PICO-Unity-Integration-SDK.git",
       "depth": 0,
-      "source": "local",
+      "source": "git",
       "dependencies": {
         "com.unity.xr.management": "4.0.0",
         "com.unity.xr.interaction.toolkit": "2.0.0",
         "com.unity.xr.core-utils": "2.3.0"
-      }
+      },
+      "hash": "75f5ff2bb5b042418365f31249fd4a015c317d7f"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",

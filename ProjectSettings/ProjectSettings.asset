@@ -143,8 +143,6 @@ PlayerSettings:
   bundleVersion: 0.1.0
   preloadedAssets:
   - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  - {fileID: 6792570569740892690, guid: 657b72366346b4f71b2cb69866aaf03a, type: 2}
-  - {fileID: 11400000, guid: 9801a56ed26d34dc0936cb367ad2a8a5, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -269,8 +267,8 @@ PlayerSettings:
   AndroidTargetArchitectures: 2
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: '{inproject}: user.keystore'
-  AndroidKeyaliasName: key1
+  AndroidKeystoreName: /Users/liviaellen/Desktop/project/pico-project/glucose.keystore
+  AndroidKeyaliasName: key-mr
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidEnableArm64MTE: 0
   AndroidBuildApkPerCpuArchitecture: 0
@@ -828,7 +826,7 @@ PlayerSettings:
   webWasm2023: 0
   scriptingDefineSymbols:
     Android: 
-    Standalone: PICO_SPATIALIZER
+    Standalone: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
