@@ -32,9 +32,21 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/UIScene.unity
     guid: 2370b384cd8bbe34dbe8a1764f867209
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/UIScene2.unity
     guid: 5a08d38fd3385844cbc3d3d0d6b723dc
+  - enabled: 0
+    path: Assets/Scenes/ObjectDetection.unity
+    guid: 2da06f247f56e164ab051164a24e0410
+  - enabled: 0
+    path: Assets/Scenes/FoodDetection.unity
+    guid: 0dc4d57e6f3de4618964790ecf9c40d2
+  - enabled: 0
+    path: Assets/Scenes/foodDemo.unity
+    guid: 7c9a14c097ef948d1b619138499691cc
+  - enabled: 1
+    path: Assets/Scenes/YoloDemo.unity
+    guid: 54d4ffc897ee49d8a7552f6e37e0eca0
   m_configObjects:
     Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: eae7a8c248df266438c1a1a7d5a9520a, type: 2}
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: 9801a56ed26d34dc0936cb367ad2a8a5, type: 2}

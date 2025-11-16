@@ -15,7 +15,7 @@ public class ObjectDetection : MonoBehaviour
     public TextAsset frameGltfAsset;
     public TextAsset anchorMatrixAsset;
       public int numFramesToRun = -1;
-        public float intervalBetweenPipelineRuns = 0.033f;
+        public float intervalBetweenPipelineRuns = 0.1f;
         private int vstWidth = 3248;
         private int vstHeight = 2464;
         private int cropWidth = 640; // yolo
@@ -32,15 +32,16 @@ public class ObjectDetection : MonoBehaviour
         private Pipeline rendererPipeline;
 
         // Global tensors
+        private Tensor rawYoloOutputGlobal;
+        private Tensor cropRgbGlobal;
+
+        // Processed result tensors (for rendering)
         private Tensor predBoxesGlobal;
         private Tensor predScoresGlobal;
         private Tensor predClassIdxGlobal;
-        private Tensor cropRgbGlobal;
 
         // Pipeline tensors
-        private Tensor predBoxesWrite;
-        private Tensor predScoresWrite;
-        private Tensor predClassIdxWrite;
+        private Tensor rawYoloOutputWrite;
         private Tensor cropRgbWrite;
 
         // Renderer pipeline tensors
@@ -48,6 +49,11 @@ public class ObjectDetection : MonoBehaviour
         private Tensor predScoresRead;
         private Tensor predClassIdxRead;
         private Tensor cropRgbRead;
+
+        // Post-processed results (stored for rendering)
+        private float[,] predBoxesArray;
+        private float[] predScoresArray;
+        private int[] predClassIdxArray;
 
         // GLTF tensors
         private Tensor gltfTensor;
@@ -64,6 +70,24 @@ public class ObjectDetection : MonoBehaviour
 
         private void Start()
         {
+            // Validate assets
+            if (yoloModel == null)
+            {
+                Debug.LogError("YOLO model is not assigned!");
+                enabled = false;
+                return;
+            }
+
+            if (frameGltfAsset == null)
+            {
+                Debug.LogError("Frame GLTF asset is not assigned!");
+                enabled = false;
+                return;
+            }
+
+            Debug.Log($"YOLO model loaded: {yoloModel.bytes.Length} bytes");
+            Debug.Log($"Frame GLTF loaded: {frameGltfAsset.bytes.Length} bytes");
+
             CreateProvider();
             CreatePipeline();
             CreateRenderer();
@@ -89,21 +113,16 @@ public class ObjectDetection : MonoBehaviour
             provider = new Provider(vstWidth, vstHeight);
         }
 
-        private void CreateYoloModel(Pipeline pipelineParam, Tensor inputTensor, Tensor predBoxes,
-            Tensor predScores, Tensor predClassIdx)
+        private void CreateYoloModel(Pipeline pipelineParam, Tensor inputTensor, Tensor rawYoloOutput)
         {
             // Create YOLO model operator
             var modelConfig = new ModelOperatorConfiguration(yoloModel.bytes, SecureMRModelType.QnnContextBinary, "yolo");
-            modelConfig.AddInputMapping("image", "image", SecureMRModelEncoding.Float32);
-            modelConfig.AddOutputMapping("_571", "_571", SecureMRModelEncoding.Float32);
-            modelConfig.AddOutputMapping("_530", "_530", SecureMRModelEncoding.Float32);
-            modelConfig.AddOutputMapping("_532", "_532", SecureMRModelEncoding.Int8);
+            modelConfig.AddInputMapping("images", "images", SecureMRModelEncoding.Float32);
+            modelConfig.AddOutputMapping("output0", "output0", SecureMRModelEncoding.Float32);
             var modelOp = pipelineParam.CreateOperator<RunModelInferenceOperator>(modelConfig);
-    
-            modelOp.SetOperand("image", inputTensor);
-            modelOp.SetResult("_571", predBoxes);
-            modelOp.SetResult("_530", predScores);
-            modelOp.SetResult("_532", predClassIdx);
+
+            modelOp.SetOperand("images", inputTensor);
+            modelOp.SetResult("output0", rawYoloOutput);
         }
 
         private void CreatePipeline()
@@ -123,9 +142,6 @@ public class ObjectDetection : MonoBehaviour
             var vstOp = pipeline.CreateOperator<RectifiedVstAccessOperator>();
             var getAffineOp = pipeline.CreateOperator<GetAffineOperator>();
             var applyAffineOp = pipeline.CreateOperator<ApplyAffineOperator>();
-            var rgbToGrayOp =
-                pipeline.CreateOperator<ConvertColorOperator>(
-                    new ColorConvertOperatorConfiguration(7)); // 7 = RGB to Gray
             var uint8ToFloat32Op = pipeline.CreateOperator<AssignmentOperator>();
             var normalizeOp =
                 pipeline.CreateOperator<ArithmeticComposeOperator>(
@@ -134,9 +150,8 @@ public class ObjectDetection : MonoBehaviour
             // Create tensors
             var cropShape = new TensorShape(new[] { cropWidth, cropHeight });
             var rawRgb = pipeline.CreateTensor<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
-            var cropGray = pipeline.CreateTensor<byte, Matrix>(1, cropShape);
-            var cropGrayFloat =
-                pipeline.CreateTensor<float, Matrix>(1, cropShape);
+            var cropRgbUint8 = pipeline.CreateTensor<byte, Matrix>(3, cropShape);
+            var cropRgbFloat = pipeline.CreateTensor<float, Matrix>(3, cropShape);
             cropRgbWrite = pipeline.CreateTensorReference<byte, Matrix>(3, cropShape);
 
             // Create source and destination points for affine transform
@@ -147,25 +162,22 @@ public class ObjectDetection : MonoBehaviour
             var affineMat = pipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 2, 3 }));
 
             // Create Yolo model and tensors
-            //var inputTensor = pipeline.CreateTensor<float, Matrix>(3, cropShape);
-            //predClassWrite = pipeline.CreateTensorReference<int, Scalar>(1, new TensorShape(new[]{1}));
-            //predScoreWrite = pipeline.CreateTensorReference<float, Scalar>(1, new TensorShape(new[]{1}));
-            
-            //var boxesShape = new TensorShape(new[] { 8400, 4 });
+            // YOLO expects RGB input [1, 3, 640, 640] -> we use [640, 640] with 3 channels
             var inputTensor = pipeline.CreateTensor<float, Matrix>(3, cropShape);
-            predBoxesWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{8400, 4}));
-            predScoresWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{8400, 1}));
-            predClassIdxWrite = pipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[]{8400, 1}));
-            
-            CreateYoloModel(pipeline, inputTensor,predBoxesWrite, predScoresWrite, predClassIdxWrite);
-            
-            // Create global tensors
+
+            // Raw YOLO output: [1, 84, 8400] - but drop batch dimension -> [84, 8400]
+            rawYoloOutputWrite = pipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[]{84, 8400}));
+
+            CreateYoloModel(pipeline, inputTensor, rawYoloOutputWrite);
+
+            // Create global tensor for raw output
+            rawYoloOutputGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[]{84, 8400}));
+            cropRgbGlobal = provider.CreateTensor<byte, Matrix>(3, cropShape);
+
+            // Create global tensors for processed results (after CPU post-processing)
             predBoxesGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[]{8400, 4}));
             predScoresGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[]{8400, 1}));
             predClassIdxGlobal = provider.CreateTensor<int, Matrix>(1, new TensorShape(new[]{8400, 1}));
-            cropRgbGlobal = provider.CreateTensor<byte, Matrix>(3, cropShape);
-
-        
 
             // Connect the operators
             vstOp.SetResult("left image", rawRgb);
@@ -178,13 +190,11 @@ public class ObjectDetection : MonoBehaviour
             applyAffineOp.SetOperand("src image", rawRgb);
             applyAffineOp.SetResult("dst image", cropRgbWrite);
 
-            rgbToGrayOp.SetOperand("src", cropRgbWrite);
-            rgbToGrayOp.SetResult("dst", cropGray);
+            // Keep RGB (no conversion to grayscale for YOLO)
+            uint8ToFloat32Op.SetOperand("src", cropRgbWrite);
+            uint8ToFloat32Op.SetResult("dst", cropRgbFloat);
 
-            uint8ToFloat32Op.SetOperand("src", cropGray);
-            uint8ToFloat32Op.SetResult("dst", cropGrayFloat);
-
-            normalizeOp.SetOperand("{0}", cropGrayFloat);
+            normalizeOp.SetOperand("{0}", cropRgbFloat);
             normalizeOp.SetResult("result", inputTensor);
         
             Debug.Log("Pipeline created successfully.");
@@ -221,7 +231,7 @@ public class ObjectDetection : MonoBehaviour
 
             // Create tensors
             var text = rendererPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
-                Encoding.UTF8.GetBytes("Boxes"));
+                Encoding.UTF8.GetBytes("YOLO"));
             var startPosition = rendererPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
                 new float[] { 0.1f, 0.3f });
             var colors = rendererPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
@@ -240,7 +250,7 @@ public class ObjectDetection : MonoBehaviour
                 });
 
             var text2 = rendererPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
-                Encoding.UTF8.GetBytes("Scores"));
+                Encoding.UTF8.GetBytes("Score"));
             var startPosition2 = rendererPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
                 new float[] { 0.1f, 0.3f });
             var colors2 = rendererPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
@@ -249,9 +259,9 @@ public class ObjectDetection : MonoBehaviour
                 new ushort[] { 0 });
             var fontSize2 = rendererPipeline.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }),
                 new float[] { 144.0f });
-            
+
             var text3 = rendererPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
-                Encoding.UTF8.GetBytes("Class Idx"));
+                Encoding.UTF8.GetBytes("Class"));
             var startPosition3 = rendererPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
                 new float[] { 0.1f, 0.3f });
             var colors3 = rendererPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
@@ -300,21 +310,21 @@ public class ObjectDetection : MonoBehaviour
             gltfTensor3 = provider.CreateTensor<Gltf>(frameGltfAsset.bytes);
 
             // Connect the operators
-            renderTextOp.SetOperand("text", predBoxesRead);
+            renderTextOp.SetOperand("text", text);
             renderTextOp.SetOperand("start", startPosition);
             renderTextOp.SetOperand("colors", colors);
             renderTextOp.SetOperand("texture ID", textureId);
             renderTextOp.SetOperand("font size", fontSize);
             renderTextOp.SetOperand("gltf", gltfPlaceholder);
-            
-            renderTextOp2.SetOperand("text", predScoresRead);
+
+            renderTextOp2.SetOperand("text", text2);
             renderTextOp2.SetOperand("start", startPosition2);
             renderTextOp2.SetOperand("colors", colors2);
             renderTextOp2.SetOperand("texture ID", textureId2);
             renderTextOp2.SetOperand("font size", fontSize2);
             renderTextOp2.SetOperand("gltf", gltfPlaceholder2);
-            
-            renderTextOp3.SetOperand("text", predClassIdxRead);
+
+            renderTextOp3.SetOperand("text", text3);
             renderTextOp3.SetOperand("start", startPosition3);
             renderTextOp3.SetOperand("colors", colors3);
             renderTextOp3.SetOperand("texture ID", textureId3);
@@ -346,32 +356,73 @@ public class ObjectDetection : MonoBehaviour
 
         private void RunPipeline()
         {
-            Debug.Log("Running pipeline...");
+            try
+            {
+                var tensorMapping = new TensorMapping();
+                tensorMapping.Set(rawYoloOutputWrite, rawYoloOutputGlobal);
+                tensorMapping.Set(cropRgbWrite, cropRgbGlobal);
 
-            var tensorMapping = new TensorMapping();
-            tensorMapping.Set(predBoxesWrite, predBoxesGlobal);
-            tensorMapping.Set(predScoresWrite, predScoresGlobal);
-            tensorMapping.Set(predClassIdxWrite, predClassIdxGlobal);
-            tensorMapping.Set(cropRgbWrite, cropRgbGlobal);
+                pipeline.Execute(tensorMapping);
 
-            pipeline.Execute(tensorMapping);
+                // Post-process the raw YOLO output on CPU
+                PostProcessYoloOutput();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error in RunPipeline: {e.Message}\n{e.StackTrace}");
+                enabled = false;
+            }
+        }
+
+        private void PostProcessYoloOutput()
+        {
+            // TODO: Read raw YOLO output from rawYoloOutputGlobal tensor
+            // The tensor shape is [84, 8400] where:
+            // - First 4 rows: bbox coordinates (x, y, w, h)
+            // - Last 80 rows: class scores for COCO classes
+
+            Debug.Log("PostProcessYoloOutput: Reading raw YOLO tensor data...");
+
+            // For now, just log that we got the output
+            // In a real implementation, you would:
+            // 1. Read the tensor data using GetData() or similar
+            // 2. Extract bbox and scores
+            // 3. Find argmax for each detection
+            // 4. Apply confidence threshold
+            // 5. Apply NMS (Non-Maximum Suppression)
+
+            // Initialize arrays if needed
+            if (predBoxesArray == null)
+            {
+                predBoxesArray = new float[8400, 4];
+                predScoresArray = new float[8400];
+                predClassIdxArray = new int[8400];
+            }
+
+            Debug.Log("PostProcessYoloOutput: Post-processing complete (placeholder)");
         }
 
         private void RenderFrame()
         {
-            Debug.Log("Rendering frame...");
+            try
+            {
+                var tensorMapping = new TensorMapping();
+                tensorMapping.Set(gltfPlaceholder, gltfTensor);
+                tensorMapping.Set(gltfPlaceholder2, gltfTensor2);
+                tensorMapping.Set(gltfPlaceholder3, gltfTensor3);
 
-            var tensorMapping = new TensorMapping();
-            tensorMapping.Set(gltfPlaceholder, gltfTensor);
-            tensorMapping.Set(gltfPlaceholder2, gltfTensor2);
-            tensorMapping.Set(gltfPlaceholder3, gltfTensor3);
-            
-            tensorMapping.Set(predBoxesRead, predBoxesGlobal);
-            tensorMapping.Set(predScoresRead, predScoresGlobal);
-            tensorMapping.Set(predClassIdxRead, predClassIdxGlobal);
-            tensorMapping.Set(cropRgbRead, cropRgbGlobal);
+                tensorMapping.Set(predBoxesRead, predBoxesGlobal);
+                tensorMapping.Set(predScoresRead, predScoresGlobal);
+                tensorMapping.Set(predClassIdxRead, predClassIdxGlobal);
+                tensorMapping.Set(cropRgbRead, cropRgbGlobal);
 
-            rendererPipeline.Execute(tensorMapping);
+                rendererPipeline.Execute(tensorMapping);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error in RenderFrame: {e.Message}\n{e.StackTrace}");
+                enabled = false;
+            }
         }
     }
 }

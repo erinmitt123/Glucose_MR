@@ -292,7 +292,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.picoxr": {
-      "version": "https://github.com/Pico-Developer/PICO-Unity-Integration-SDK.git",
+      "version": "https://github.com/Pico-Developer/PICO-Unity-Integration-SDK.git#8a80917b64c17efd575eb5a77a70556e38976a9b",
       "depth": 0,
       "source": "git",
       "dependencies": {
@@ -300,7 +300,7 @@
         "com.unity.xr.interaction.toolkit": "2.0.0",
         "com.unity.xr.core-utils": "2.3.0"
       },
-      "hash": "75f5ff2bb5b042418365f31249fd4a015c317d7f"
+      "hash": "8a80917b64c17efd575eb5a77a70556e38976a9b"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
