@@ -11,9 +11,16 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3ea01e77be99618395f448b16bd7cc2bd4248bd9e5d8474964b2d97f39c5d74/System.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/PICO Unity Integration SDK-3.3.2-20251111/Runtime/Scripts/PXR_Plugin.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/PICO Unity Integration SDK-3.3.2-20251111/Runtime/Scripts/SecureMR/Core/PXR_SecureMROperatorCore.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/MnistFrame.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/ColorPicker.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.picoxr@8a80917b64c1/Runtime/Scripts/SecureMR/Core/PXR_SecureMRPipelineCore.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
-  <component name="RunManager">
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Attach to Unity Player.AndroidPlayer(Pico A9210).executor": "Debug"
+  }
+}]]></component>
+  <component name="RunManager" selected="Attach to Unity Player.AndroidPlayer(Pico A9210)">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.0.39f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath C:\data\repos\Glucose_MR -debugCodeOptimization" />
@@ -34,10 +41,84 @@
       <option name="MIXED_MODE_DEBUG" value="0" />
       <method v="2" />
     </configuration>
+    <configuration name="AndroidPlayer(Pico A9210)" type="UnityPlayer" factoryName="UnityAttachToPlayer" temporary="true">
+      <option name="androidPackageUid" value="10140" />
+      <option name="deviceId" value="PA92U0MGK7280371G" />
+      <option name="deviceName" value="Pico A9210" />
+      <option name="host" value="127.0.0.1" />
+      <option name="packageName" value="com.pico.securemr.test" />
+      <option name="playerId" value="AndroidADBPlayer(PA92U0MGK7280371G)" />
+      <option name="playerInstanceId" value="com.pico.securemr.test" />
+      <option name="port" value="56087" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Attach to Unity Player.AndroidPlayer(Pico A9210)" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="TaskManager">
     <servers />
   </component>
   <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Assets/MnistFrame.cs</url>
+          <line>106</line>
+          <properties documentPath="C:\data\repos\Glucose_MR\Assets\MnistFrame.cs" containingFunctionPresentation="Method 'CreatePipeline'">
+            <startOffsets>
+              <option value="3470" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3491" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Assets/MnistFrame.cs</url>
+          <line>119</line>
+          <properties documentPath="C:\data\repos\Glucose_MR\Assets\MnistFrame.cs" containingFunctionPresentation="Method 'CreatePipeline'">
+            <startOffsets>
+              <option value="3866" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3929" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Assets/MnistFrame.cs</url>
+          <line>161</line>
+          <properties documentPath="C:\data\repos\Glucose_MR\Assets\MnistFrame.cs" containingFunctionPresentation="Method 'CreatePipeline'">
+            <startOffsets>
+              <option value="6366" />
+            </startOffsets>
+            <endOffsets>
+              <option value="6407" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Assets/MnistFrame.cs</url>
+          <line>197</line>
+          <properties documentPath="C:\data\repos\Glucose_MR\Assets\MnistFrame.cs" containingFunctionPresentation="Method 'CreateRenderer'">
+            <startOffsets>
+              <option value="7750" />
+            </startOffsets>
+            <endOffsets>
+              <option value="7928" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
 </project>

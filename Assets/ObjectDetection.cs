@@ -52,6 +52,7 @@ namespace PicoXR.SecureMR.Demo
         private Tensor currentPositionGlobal;
         private Tensor previousPositionGlobal;
         private Tensor leftEyeUVGlobal;
+        private Tensor textureIdGlobal;
 
         // Pipeline tensors for VST
         private Tensor vstOutputLeftUint8Placeholder;
@@ -76,6 +77,7 @@ namespace PicoXR.SecureMR.Demo
         // Pipeline tensors for rendering
         private Tensor currentPositionRead;
         private Tensor previousPositionRead;
+        private Tensor textureIdPlaceholder;
 
         // GLTF tensors
         private Tensor gltfTensor;
@@ -112,6 +114,8 @@ namespace PicoXR.SecureMR.Demo
                 renderPipeline = provider.CreatePipeline();
 
                 CreateGlobalTensors();
+                
+                CreateAndRunInitPipeline();
 
                 new Thread(() => 
                 {
@@ -232,6 +236,8 @@ namespace PicoXR.SecureMR.Demo
 
             byte[] gltfBytes = ufoGltfAsset.bytes;
             gltfTensor = provider.CreateTensor<Gltf>(gltfBytes);
+            
+            textureIdGlobal = provider.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }));
         }
 
         private void CreateVstPipeline()
@@ -415,7 +421,7 @@ namespace PicoXR.SecureMR.Demo
         {
             try
             {
-                map2dTo3dPipeline = provider.CreatePipeline();
+                map2dTo3dPipeline = provider.CreatePipeline(); 
 
                 // Step 1: Create pipeline placeholders
                 uvPlaceholder = map2dTo3dPipeline.CreateTensorReference<int, Point>(2, new TensorShape(new[] { 1 }));
@@ -486,6 +492,29 @@ namespace PicoXR.SecureMR.Demo
             }
         }
 
+        private void CreateAndRunInitPipeline()
+        {
+            var initPipeline = provider.CreatePipeline();
+
+            var textureIdInitPlaceholder = initPipeline.CreateTensorReference<ushort, Scalar>(1, new TensorShape(new[] { 1 }));
+            var rgbImageTensor = initPipeline.CreateTensor<float, Matrix>(3, 
+                new TensorShape(new[] { 1080, 1080 }));
+            var gltfInitPlaceholder = initPipeline.CreateTensorReference<Gltf>();
+            
+            var loadTextureOp = initPipeline.CreateOperator<LoadTextureOperator>();
+            loadTextureOp.SetOperand("gltf", gltfInitPlaceholder);
+            loadTextureOp.SetOperand("rgb image", rgbImageTensor);
+            loadTextureOp.SetResult("texture ID", textureIdInitPlaceholder);
+            
+            var tensorMapping = new TensorMapping();
+            tensorMapping.Set(gltfInitPlaceholder, gltfTensor);
+            tensorMapping.Set(textureIdInitPlaceholder, textureIdGlobal);
+
+            renderPipeline.Execute(tensorMapping);
+
+            
+        }
+
         private void CreateRenderPipeline()
         {
             lock(pipelineLock)
@@ -522,29 +551,25 @@ namespace PicoXR.SecureMR.Demo
                     // Create GLTF placeholder and position tensor references
                     gltfPlaceholder = renderPipeline.CreateTensorReference<Gltf>();
 
-                    var textureId = renderPipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }),
-                        new ushort[] { 0 });
-                    var rgbImageTensor = renderPipeline.CreateTensor<float, Matrix>(3, 
-                        new TensorShape(new[] { 1080, 1080 }));
+                    textureIdPlaceholder = renderPipeline.CreateTensorReference<ushort, Scalar>(1, new TensorShape(new[] { 1 }));
                      
-                    var text = renderPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 1 }),
-                        new byte[] {110, 105, 114, 114, 117});
-                    
+                    //var text = renderPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 1 }),
+                    //    new byte[] {110, 105, 114, 114, 117});
+                    var text = renderPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
+                        Encoding.UTF8.GetBytes("test1"));
+
                      
                     var renderTextOp = renderPipeline.CreateOperator<RenderTextOperator>(
                         new RenderTextOperatorConfiguration(SecureMRFontTypeface.SansSerif, "en-US", 1080, 1080));
                     renderTextOp.SetOperand("text", text);
                     renderTextOp.SetOperand("start", startPosition);
                     renderTextOp.SetOperand("colors", colors);
-                    renderTextOp.SetOperand("texture ID", textureId);
+                    renderTextOp.SetOperand("texture ID", textureIdPlaceholder);
                     renderTextOp.SetOperand("font size", fontSize);
                     renderTextOp.SetOperand("gltf", gltfPlaceholder);
                     
 
-                    // var loadTextureOp = renderPipeline.CreateOperator<LoadTextureOperator>();
-                    // loadTextureOp.SetOperand("gltf", gltfTensor);
-                    // loadTextureOp.SetOperand("rgb image", rgbImageTensor);
-                    // loadTextureOp.SetResult("texture ID", textureId);
+ 
                     
                     
                     
@@ -588,7 +613,7 @@ namespace PicoXR.SecureMR.Demo
 
         private void RunMap2dTo3dPipeline()
         {
-            var tensorMapping = new TensorMapping();
+            var tensorMapping = new TensorMapping(); 
             tensorMapping.Set(uvPlaceholder, leftEyeUVGlobal);
             tensorMapping.Set(vstOutputLeftUint8Placeholder1, vstOutputLeftUint8Global);
             tensorMapping.Set(vstOutputRightUint8Placeholder1, vstOutputRightUint8Global);
@@ -605,6 +630,7 @@ namespace PicoXR.SecureMR.Demo
             tensorMapping.Set(previousPositionRead, previousPositionGlobal);
             tensorMapping.Set(currentPositionRead, currentPositionGlobal);
             tensorMapping.Set(gltfPlaceholder, gltfTensor);
+            tensorMapping.Set(textureIdPlaceholder, textureIdGlobal);
             // tensorMapping.Set(isUfoDetectedRead, isUfoDetectedGlobal);
 
             renderPipeline.Execute(tensorMapping);
