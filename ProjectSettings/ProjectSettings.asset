@@ -267,8 +267,8 @@ PlayerSettings:
   AndroidTargetArchitectures: 2
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: /Users/liviaellen/Desktop/project/pico-project/glucose.keystore
-  AndroidKeyaliasName: key-mr
+  AndroidKeystoreName: '{inproject}: user.keystore'
+  AndroidKeyaliasName: key1
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidEnableArm64MTE: 0
   AndroidBuildApkPerCpuArchitecture: 0
