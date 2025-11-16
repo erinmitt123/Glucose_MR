@@ -103,7 +103,7 @@ public class FoodInfo : MonoBehaviour
         fiber.text = "Fiber: " + secureMLValues[3].ToString();
         protein.text = "Protein: " + secureMLValues[4].ToString();
         sugar.text = "Sugar: " + secureMLValues[5].ToString();
-        glucose.text = $"Glucose: ${glucoseVal}";
+        glucose.text = $"Glucose: {glucoseVal}";
 
         if (secureMLValues[6] < 0)
         {

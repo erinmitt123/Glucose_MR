@@ -11,8 +11,8 @@ public class ApplicationManager : MonoBehaviour
 
     [Header("Runtime Values")]
     public double glucoseLevel = 100.00;
-    public string identifiedObject = "banana";
-    public int identifiedObjectIndex = 0;
+    public string identifiedObject = "pizza";
+    public int identifiedObjectIndex = 7;
 
     private string regexPattern = @"\d+(\.\d+)?";
 
