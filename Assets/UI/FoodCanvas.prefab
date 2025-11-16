@@ -414,6 +414,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   food: {fileID: 6512564421224119061}
   perUnit: {fileID: 1379903263816088509}
+  glucose: {fileID: 0}
   carbs: {fileID: 5129335270052604796}
   fats: {fileID: 6171599035081323667}
   fiber: {fileID: 2146742585011352868}
@@ -1458,7 +1459,7 @@ GameObject:
   - component: {fileID: 7624699595887417975}
   - component: {fileID: 2373096016533367580}
   m_Layer: 5
-  m_Name: Glucose Lvl
+  m_Name: Glucose
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

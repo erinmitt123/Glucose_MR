@@ -8,7 +8,22 @@ using UnityEngine.UI;
 //attach this to each food when identified
 public class FoodInfo : MonoBehaviour
 {
+    public static FoodInfo Instance { get; private set; }
+
+    public UIControllerScript other;   // drag the GameObject here in Inspector
+
+    [Header("Runtime Calculations")]
+    public double glucoseVal;
+    //values retreived from database
+    public double[] secureMLValues;
+
+
+    [Header("Calculation-Based Images")]
+    public Image emoji; // drag object with GlucoseData onto this
+    public Sprite[] emojiDatabase;
+
     //values that are set based on database values
+    [Header("Display Fields")]
     public TMP_Text food;
     public TMP_Text perUnit;
     public TMP_Text glucose;
@@ -18,25 +33,30 @@ public class FoodInfo : MonoBehaviour
     public TMP_Text protein;
     public TMP_Text sugar;
     public TMP_Text addedSugars;
-    public double glucoseVal;
-    private bool isTypeOne;
-    Dictionary<string, int> dictFoods;
-
-    //values retreived from database
-    public double[] secureMLValues;
-
-    //values that are set based on calculations
-    public Sprite[] emojiDatabase;
     public TMP_Text grade;
-    public Image emoji; // drag object with GlucoseData onto this
-    public UIControllerScript other;   // drag the GameObject here in Inspector
 
+    [HideInInspector] public Dictionary<string, int> dictFoods;
+    private bool isTypeOne;
+
+    private void Awake()
+    {
+        // Enforce singleton pattern
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     internal void SetDict(Dictionary<string, int> map)
     {
        // Debug.Log(dictFoods.Values.ToString());
         dictFoods = map;
     }
+
     internal void SetValues(double[][] data)
     {
         throw new NotImplementedException();
@@ -69,13 +89,14 @@ public class FoodInfo : MonoBehaviour
         return name;
     }
 
-    public void SetValues(double[] values)
+    public void UpdateValuesAndDisplay()
     {
         isTypeOne = other.isTypeOne;
-        secureMLValues = values;
-        glucoseVal = ApplicationManager.Instance.glucoseLevel;
 
-        Debug.Log("FoodInfo received " + values.Length + " values.");
+        glucoseVal = ApplicationManager.Instance.glucoseLevel;
+        secureMLValues = CsvToDoubleArray.Instance.nutritionDataArray[ApplicationManager.Instance.identifiedObjectIndex];
+
+        Debug.Log("FoodInfo received " + secureMLValues.Length + " values.");
         food.text = "Food: "+  GetStringForInt((int)secureMLValues[8]);
         carbs.text = "Carbs: " + secureMLValues[1].ToString();
         fats.text = "Fats: " + secureMLValues[2].ToString();
@@ -109,8 +130,6 @@ public class FoodInfo : MonoBehaviour
             Debug.Log(value);
         }
     }
-
-    public void UpdateValues() => SetValues(secureMLValues);
 
     private void TypeOneHelper(double score)
     {

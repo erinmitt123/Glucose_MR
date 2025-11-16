@@ -114,7 +114,7 @@ public class VoiceManager : MonoBehaviour
                 Debug.Log("engine stopped");
                 _isMicOn = false;
 
-                ApplicationManager.Instance.ParseGlucoseLevelFromVoice();
+                ApplicationManager.Instance.ParseVoice();
             }
             
         }

@@ -1,15 +1,18 @@
 using UnityEngine;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Threading.Tasks;
 
 public class ApplicationManager : MonoBehaviour
 {
     public static ApplicationManager Instance { get; private set; }
-    public FoodInfo foodInfo;
 
     [SerializeField] VoiceManager voiceManager;
 
+    [Header("Runtime Values")]
     public double glucoseLevel = 100.00;
+    public string identifiedObject = "banana";
+    public int identifiedObjectIndex = 0;
 
     private string regexPattern = @"\d+(\.\d+)?";
 
@@ -35,7 +38,35 @@ public class ApplicationManager : MonoBehaviour
         }
     }
 
-    public void ParseGlucoseLevelFromVoice()
+    public async void ParseVoice()
+    {
+        Task glucoseTask = ParseGlucoseLevel();
+        Task identifiedObjectTask = ParseKeyword();
+
+        await Task.WhenAll(glucoseTask, identifiedObjectTask);
+
+        FoodInfo.Instance.UpdateValuesAndDisplay();
+    }
+
+    private async Task ParseKeyword()
+    {
+        var keyword = await Task.Run(() =>
+            KeywordParser.FindKeyword(voiceManager.storedAsrResult)
+        );
+
+        if (keyword != null)
+        {
+            identifiedObject = keyword;
+            identifiedObjectIndex = FoodInfo.Instance.dictFoods[keyword] - 46;
+            Debug.Log($"Object Identified: {identifiedObject}");
+        }
+        else
+        {
+            Debug.Log("There is no new identified object");
+        }
+    }
+
+    private async Task ParseGlucoseLevel()
     {
         if (voiceManager.storedAsrResult == null)
         {
@@ -43,13 +74,13 @@ public class ApplicationManager : MonoBehaviour
             return;
         }
 
-        var number = Utils.GetDoubleFromNonnumericalSentence(voiceManager.storedAsrResult);
+        var number = await Task.Run(() => 
+            Utils.GetDoubleFromNonnumericalSentence(voiceManager.storedAsrResult)
+        );
 
         if (number != null)
         {
             glucoseLevel = (double)number;
-            foodInfo.UpdateValues();
-
             Debug.Log($"Voice Parsing Success: the glucose level is {glucoseLevel}");
         }
         else

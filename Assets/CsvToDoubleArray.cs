@@ -5,10 +5,35 @@ using UnityEngine;
 
 public class CsvToDoubleArray : MonoBehaviour
 {
+    public static CsvToDoubleArray Instance { get; private set; }
+
     public TextAsset csvFile;
-    public FoodInfo foodInfo;
     public TextAsset csvFileDict;
 
+    public double[][] nutritionDataArray;
+
+    private void Awake()
+    {
+        // Enforce singleton pattern
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        var map = ParseToDictionary();
+        FoodInfo.Instance.SetDict(map);
+        Debug.Log("Loaded " + map.Count + " entries");
+
+        nutritionDataArray = ParseCsv(csvFile.text);
+        FoodInfo.Instance.UpdateValuesAndDisplay();
+    }
 
     public Dictionary<string, int> ParseToDictionary()
     {
@@ -30,14 +55,6 @@ public class CsvToDoubleArray : MonoBehaviour
         }
 
         return dict;
-    }
-    void Start()
-    {
-        var map = ParseToDictionary();
-        foodInfo.SetDict(map);
-        Debug.Log("Loaded " + map.Count + " entries");
-        double[][] data = ParseCsv(csvFile.text);
-        foodInfo.SetValues(data[0]);
     }
 
     public double[][] ParseCsv(string csvText)
