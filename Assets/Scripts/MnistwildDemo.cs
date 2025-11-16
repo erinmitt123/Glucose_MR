@@ -127,8 +127,7 @@ namespace PicoXR.SecureMR.Demo
             var cropShape = new TensorShape(new[] { cropWidth, cropHeight });
             var rawRgb = pipeline.CreateTensor<byte, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
             var cropGray = pipeline.CreateTensor<byte, Matrix>(1, cropShape);
-            var cropGrayFloat =
-                pipeline.CreateTensor<float, Matrix>(1, cropShape);
+            var cropGrayFloat = pipeline.CreateTensor<float, Matrix>(1, cropShape);
             cropRgbWrite = pipeline.CreateTensorReference<byte, Matrix>(3, cropShape);
 
             // Create source and destination points for affine transform

@@ -25,7 +25,7 @@ using System.Collections.Concurrent;
 
 namespace PicoXR.SecureMR.Demo
 {
-    public class UFODemo : MonoBehaviour
+    public class ObjectDetection : MonoBehaviour
     {
         public TextAsset faceModel;
         public TextAsset ufoGltfAsset;
@@ -504,6 +504,13 @@ namespace PicoXR.SecureMR.Demo
                         new ArithmeticComposeOperatorConfiguration("({0} * 0.95 + {1} * 0.05)"));
                     var assignmentOp1 = renderPipeline.CreateOperator<AssignmentOperator>();
 
+                    var startPosition = renderPipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
+                        new float[] { 0.1f, 0.3f });
+                    var colors = renderPipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
+                        new byte[] { 255, 255, 255, 255, 0, 0, 0, 255 }); // white text, black background
+                    var fontSize = renderPipeline.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }),
+                        new float[] { 144.0f });
+                    
                     // Connect operators for smooth movement
                     arithmeticOp.SetOperand("{0}", previousPositionRead);
                     arithmeticOp.SetOperand("{1}", currentPositionRead);
@@ -515,6 +522,29 @@ namespace PicoXR.SecureMR.Demo
                     // Create GLTF placeholder and position tensor references
                     gltfPlaceholder = renderPipeline.CreateTensorReference<Gltf>();
 
+                    var textureId = renderPipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }),
+                        new ushort[] { 0 });
+                    var rgbImageTensor = renderPipeline.CreateTensor<float, Matrix>(3, 
+                        new TensorShape(new[] { 1080, 1080 }));
+                     
+                    var text = renderPipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 1 }),
+                        new byte[] {110, 105, 114, 114, 117});
+                    
+                     
+                    var renderTextOp = renderPipeline.CreateOperator<RenderTextOperator>(
+                        new RenderTextOperatorConfiguration(SecureMRFontTypeface.SansSerif, "en-US", 1080, 1080));
+                    renderTextOp.SetOperand("text", text);
+                    renderTextOp.SetOperand("start", startPosition);
+                    renderTextOp.SetOperand("colors", colors);
+                    renderTextOp.SetOperand("texture ID", textureId);
+                    renderTextOp.SetOperand("font size", fontSize);
+                    renderTextOp.SetOperand("gltf", gltfPlaceholder);
+                    
+
+                    // var loadTextureOp = renderPipeline.CreateOperator<LoadTextureOperator>();
+                    // loadTextureOp.SetOperand("gltf", gltfTensor);
+                    // loadTextureOp.SetOperand("rgb image", rgbImageTensor);
+                    // loadTextureOp.SetResult("texture ID", textureId);
                     
                     
                     

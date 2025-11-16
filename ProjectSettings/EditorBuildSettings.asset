@@ -26,13 +26,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/UFODemo.unity
     guid: 92310e2c2b7fa4904b63899f39292c39
   - enabled: 0
     path: Assets/Scenes/UIScene.unity
     guid: 2370b384cd8bbe34dbe8a1764f867209
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/UIScene2.unity
     guid: 5a08d38fd3385844cbc3d3d0d6b723dc
   m_configObjects:
