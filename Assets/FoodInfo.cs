@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +19,7 @@ public class FoodInfo : MonoBehaviour
     public TMP_Text addedSugars;
     public double glucoseVal;
     private bool isTypeOne=true;
+    Dictionary<string, int> dictFoods;
 
     //values retreived from database
     public double[] secureMLValues;
@@ -28,14 +31,52 @@ public class FoodInfo : MonoBehaviour
 
     public void GetGlucose()
     {
-        glucoseVal = ApplicationManager.Instance.glucoseLevel;
+        //glucoseVal = ApplicationManager.Instance.glucoseLevel;
         //isTypeOne=ApplicationManager.Instance.isTypeOne;
     }
+
+    internal void SetDict(Dictionary<string, int> map)
+    {
+       // Debug.Log(dictFoods.Values.ToString());
+        dictFoods = map;
+    }
+    internal void SetValues(double[][] data)
+    {
+        throw new NotImplementedException();
+    }
+    bool TryGetStringForInt(Dictionary<string, int> dict, int value, out string result)
+    {
+        foreach (var pair in dict)
+        {
+            if (pair.Value == value)
+            {
+                result = pair.Key;
+                return true;
+            }
+        }
+
+        result = null;
+        return false;
+    }
+
+    private string GetStringForInt(int targetValue)
+    {
+        if (TryGetStringForInt(dictFoods, targetValue, out string name))
+        {
+            Debug.Log("Found:   " + name);
+        }
+        else
+        {
+            Debug.Log("ID not found!");
+        }
+        return name;
+    }
+
     public void SetValues(double[] values)
     {
      secureMLValues = values;
      Debug.Log("FoodInfo received " + values.Length + " values.");
-     food.text = "Food: "+secureMLValues[0].ToString();
+     food.text = "Food: "+  GetStringForInt((int)secureMLValues[8]);
      carbs.text = "Carbs: " + secureMLValues[1].ToString();
      fats.text = "Fats: " + secureMLValues[2].ToString();
      fiber.text = "Fiber: " + secureMLValues[3].ToString();
