@@ -15,7 +15,7 @@ public class FoodInfo : MonoBehaviour
     public TMP_Text protein;
     public TMP_Text sugar;
     public TMP_Text addedSugars;
-    public double glucoseVal=200;
+    public double glucoseVal;
     private bool isTypeOne=true;
 
     //values retreived from database
@@ -28,7 +28,7 @@ public class FoodInfo : MonoBehaviour
 
     public void GetGlucose()
     {
-        //glucoseVal = ApplicationManager.Instance.glucoseLevel;
+        glucoseVal = ApplicationManager.Instance.glucoseLevel;
         //isTypeOne=ApplicationManager.Instance.isTypeOne;
     }
     public void SetValues(double[] values)
@@ -76,7 +76,7 @@ public class FoodInfo : MonoBehaviour
             }
             else
             {
-                grade.text = "Consume a Low Snack First";
+                grade.text = "Your bg is low. Eat carbs first.";
                 grade.color = new Color32(255, 0, 0, 255); // red
                 emoji.sprite = emojiDatabase[3];
             }

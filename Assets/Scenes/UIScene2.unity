@@ -159,6 +159,67 @@ Transform:
   - {fileID: 2673240740586844490}
   m_Father: {fileID: 1680501587}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &539232358
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7227106005070564799, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_Name
+      value: ApplicationManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 7227106005070564799, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
 --- !u!1 &820090967
 GameObject:
   m_ObjectHideFlags: 0
@@ -698,7 +759,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   diabetesCanvas: {fileID: 1899216637}
-  glucoseCanvas: {fileID: 3478792699586733056}
   foodCanvas: {fileID: 6608239411428183611}
   isTypeOne: 0
   inputField: {fileID: 930684620}
@@ -2703,11 +2763,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45e35711394795640b17b0b76bb2757e, type: 3}
---- !u!1 &3478792699586733056 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6256760302204879954, guid: 45e35711394795640b17b0b76bb2757e, type: 3}
-  m_PrefabInstance: {fileID: 3478792699586733055}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3533369827395663398
 GameObject:
   m_ObjectHideFlags: 0
@@ -3832,7 +3887,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3244591966549547191, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.00030088425
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3244591966549547191, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3852,11 +3907,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3244591966549547191, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.025077734
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3244591966549547191, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1.36
+      value: 1.133
       objectReference: {fileID: 0}
     - target: {fileID: 3244591966549547191, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3928,7 +3983,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4515159240243837341, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: glucoseVal
-      value: 200
+      value: 65
       objectReference: {fileID: 0}
     - target: {fileID: 4515159240243837341, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: emojiDatabase.Array.size
@@ -3985,6 +4040,14 @@ PrefabInstance:
     - target: {fileID: 6512564421224119061, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: m_text
       value: 'Food:'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6512564421224119061, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
+      propertyPath: m_margin.z
+      value: -266.8419
+      objectReference: {fileID: 0}
+    - target: {fileID: 6512564421224119061, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6582615217392705939, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4729,3 +4792,4 @@ SceneRoots:
   - {fileID: 1366103857}
   - {fileID: 1101679343}
   - {fileID: 3478792699586733055}
+  - {fileID: 539232358}

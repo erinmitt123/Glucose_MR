@@ -3350,17 +3350,6 @@
                     "action": "MicPress",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "818117fb-0480-44db-8207-4eacf757706c",
-                    "path": "<PXR_PTController>/gripPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "MicPress",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         }
