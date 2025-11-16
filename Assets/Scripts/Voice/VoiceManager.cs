@@ -68,7 +68,11 @@ public class VoiceManager : MonoBehaviour
 
             storedAsrResult = m.Text;
             Debug.Log($"text={m.Text} isFinal={m.IsFinalResult}");
+
+            if (m.IsFinalResult) 
+                StopAsrEngine();
         });
+
         SpeechService.SetOnSpeechErrorCallback(msg =>
         {
             var m = msg.Data;
@@ -90,6 +94,14 @@ public class VoiceManager : MonoBehaviour
         }
     }
 
+    private void StopAsrEngine()
+    {
+        SpeechService.StopAsr();
+        Debug.Log("engine stopped");
+
+        ApplicationManager.Instance.ParseVoice();
+    }
+
     public void OnMicButtonPressed(InputAction.CallbackContext context)
     {
         if (context.started)
@@ -102,6 +114,12 @@ public class VoiceManager : MonoBehaviour
                 return;
             }
 
+
+            SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
+            Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
+            _isMicOn = true;
+
+            /*
             if (!_isMicOn)
             {
                 SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
@@ -116,6 +134,7 @@ public class VoiceManager : MonoBehaviour
 
                 ApplicationManager.Instance.ParseVoice();
             }
+            */
             
         }
     }

@@ -44,10 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f10d6d452c27464da8dfb7aa091c68c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayAsrResult: {fileID: 0}
   storedAsrResult: 
   maxDuration: 8
-  autoStop: 0
+  autoStop: 1
   showPunctuation: 1
   inputActions: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   micAction: {fileID: 5314548568102947221, guid: c348712bda248c246b8c49b3db54643f, type: 3}
@@ -98,3 +97,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   voiceManager: {fileID: 3089171574421804273}
   glucoseLevel: 100
+  identifiedObject: pizza
+  identifiedObjectIndex: 7
