@@ -50,3 +50,5 @@ MonoBehaviour:
   validationFFREnabled: 0
   validationETFREnabled: 0
   portalInited: 1
+  isDataCollectionDisabled: 0
+  portalFirstSelected: 0
