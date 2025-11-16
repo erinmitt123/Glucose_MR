@@ -12,7 +12,7 @@ public class VoiceManager : MonoBehaviour
 
     [Header("Parameters")]
     [SerializeField] private int maxDuration = 8;
-    [SerializeField] private bool autoStop = true;
+    [SerializeField] private bool autoStop = false;
     [SerializeField] private bool showPunctuation = true;
 
     [Header("Controller References")]
@@ -41,11 +41,13 @@ public class VoiceManager : MonoBehaviour
     {
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
         {
+            Debug.Log("Permission wasn't given for mic");
             Permission.RequestUserPermission(Permission.Microphone);
         }
 
         if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
         {
+            Debug.Log("Permission wasn't given for write");
             Permission.RequestUserPermission(Permission.ExternalStorageWrite);
         }
     }
@@ -55,6 +57,7 @@ public class VoiceManager : MonoBehaviour
     {
         SpeechService.SetOnAsrResultCallback(msg =>
         {
+            Debug.Log("ASR Result Callback done successfully");
             var m = msg.Data;
             storedAsrResult = m.Text;
 
