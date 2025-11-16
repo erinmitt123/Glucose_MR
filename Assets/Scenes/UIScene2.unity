@@ -3413,6 +3413,12 @@ MonoBehaviour:
   maxEyeTextureScale: 1.26
   enableSuperResolution: 0
   useRecommendedAntiAliasingLevel: 0
+  usePremultipliedAlpha: 0
+  useLayerBlend: 0
+  srcColor: 1
+  dstColor: 1
+  srcAlpha: 1
+  dstAlpha: 1
 --- !u!4 &6528530117482412838 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3475118261464492563, guid: 9f3369e30fbd31f4bb596b1a99babe83, type: 3}
@@ -3675,6 +3681,10 @@ PrefabInstance:
       propertyPath: 'emojiDatabase.Array.data[4]'
       value: 
       objectReference: {fileID: 21300000, guid: a2eb427760c3ab9439dc21243a68fd70, type: 3}
+    - target: {fileID: 4621714216384519155, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
+      propertyPath: m_text
+      value: 'Added Sugars:'
+      objectReference: {fileID: 0}
     - target: {fileID: 5759177823790379216, guid: 58809d65bae8a2a49b95ac0261b7e192, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
