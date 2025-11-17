@@ -176,3 +176,18 @@ Used for all Mixed Reality testing, object overlay logic, and SecureMR integrati
 **Food Object Detection Model:**
 YOLOv8 for Nutrition-Focused Food Detection
 🔗 https://arxiv.org/html/2408.10532v1
+
+## 🧑‍🤝‍🧑 Contributors
+
+<a href="https://github.com/ErinMitt">
+  <img src="https://img.shields.io/badge/ErinMitt-100000?style=for-the-badge&logo=github&logoColor=white">
+</a>
+<a href="https://github.com/liviaellen">
+  <img src="https://img.shields.io/badge/liviaellen-100000?style=for-the-badge&logo=github&logoColor=white">
+</a>
+<a href="https://github.com/mrebol">
+  <img src="https://img.shields.io/badge/mrebol-100000?style=for-the-badge&logo=github&logoColor=white">
+</a>
+<a href="https://github.com/cyrilmedab">
+  <img src="https://img.shields.io/badge/cyrilmedab-100000?style=for-the-badge&logo=github&logoColor=white">
+</a>
