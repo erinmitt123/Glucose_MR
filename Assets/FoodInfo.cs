@@ -56,7 +56,8 @@ public class FoodInfo : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    //set dict to the pulled in map that allows cross reference from image database and USDA database
+    //set dict to the pulled in map that allows cross reference from image database and
+    //MyFoodData (SR Legacy + FNDDS) database
     internal void SetDict(Dictionary<string, int> map)
     {
         dictFoods = map;
