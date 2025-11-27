@@ -8,13 +8,18 @@ using UnityEngine.UI;
 //attach this to each food when identified
 public class FoodInfo : MonoBehaviour
 {
+    /*This script displays the food that is scanned and gives all needed macros and nutrition information.
+     * It also takes in glucose val and diabetes type the user has 
+     * and figures out if what information to display on if the user should eat it.
+     * */
     public static FoodInfo Instance { get; private set; }
 
-    public UIControllerScript other;   // drag the GameObject here in Inspector
+    public UIControllerScript other; 
 
     [Header("Runtime Calculations")]
     public double glucoseVal;
-    //values retreived from database
+
+    //values retreived from the database of whichever food is displaying
     public double[] secureMLValues;
 
 
@@ -131,6 +136,7 @@ public class FoodInfo : MonoBehaviour
         }
     }
 
+    //We were told a grading system was not useful for type one and to instead give this feedback
     private void TypeOneHelper(double score)
     {
         if (glucoseVal < 70) {
@@ -164,25 +170,36 @@ public class FoodInfo : MonoBehaviour
     public int CalculateScore(double[] secureMLValues, double glucoseVal)
     {
         double score;
+
+        //if glucose is less than 70, user needs fast sugars so that is weighted higher
         if (glucoseVal < 70)
         {
-            //these vals are hard coded to their column because I am being fast for the hackathons sake sorry
+            //these vals are hard coded to their column because we are able to pull in ints and not the column name
             score = 13 + 10 * (secureMLValues[1] + secureMLValues[5] + secureMLValues[6]) / (secureMLValues[2] + secureMLValues[3] + secureMLValues[4]);
         }
+
+        //if glucose is less than 100, food shoulerd be evaluated based on being a slower food, but they are pretty low and could basically eat whatev
         else if (glucoseVal < 100)
         {
             score = 90 + 0.3 * ((secureMLValues[2] + secureMLValues[3] + secureMLValues[4]) - (secureMLValues[1] + secureMLValues[5] + (secureMLValues[6])));
         }
+
+        //as they go hiher, unhealthy things (that are fast to dissolve) become worse and worse, so they scale for lower grades as glucose goes up
         else
         {
             score = (-glucoseVal/2)+140 + 0.3 * ((secureMLValues[2] + secureMLValues[3] + secureMLValues[4]) - (secureMLValues[1] + secureMLValues[5] + (secureMLValues[6])));
         }
-        Debug.Log("score"+score);
+       
+
         if (score > 100)
             score = 100;
+        else if (score < 0)
+            score = 0;
 
         return (int)score;
     }
+
+    //gives a grade based on CalculateScore()
     public string CalculateGrade(double score)
     {
             return score switch
@@ -209,6 +226,8 @@ public class FoodInfo : MonoBehaviour
             };
 
         }
+
+    //assigns a color and emoji based on CalculateGrade()
     public void ChooseColor(string gradeText)
     {        
             // Get first character as uppercase (A, B, C, D, F)
