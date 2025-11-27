@@ -11,7 +11,7 @@ public class FoodInfo : MonoBehaviour
     /*This script displays the food that is scanned and gives all needed macros and nutrition information.
      * It also takes in glucose val and diabetes type the user has 
      * and figures out if what information to display on if the user should eat it.
-     * */
+     */
     public static FoodInfo Instance { get; private set; }
 
     public UIControllerScript other; 
@@ -56,16 +56,13 @@ public class FoodInfo : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    //set dict to the pulled in map that allows cross reference from image database and USDA database
     internal void SetDict(Dictionary<string, int> map)
     {
-       // Debug.Log(dictFoods.Values.ToString());
         dictFoods = map;
     }
 
-    internal void SetValues(double[][] data)
-    {
-        throw new NotImplementedException();
-    }
+    //figure out which food is paired
     bool TryGetStringForInt(int value, out string result)
     {
         foreach (var pair in dictFoods)
@@ -81,6 +78,7 @@ public class FoodInfo : MonoBehaviour
         return false;
     }
 
+    //sets food name
     private string GetStringForInt(int targetValue)
     {
         if (TryGetStringForInt(targetValue, out string name))
@@ -94,6 +92,7 @@ public class FoodInfo : MonoBehaviour
         return name;
     }
 
+    //updates display with food values and grades
     public void UpdateValuesAndDisplay()
     {
         isTypeOne = other.isTypeOne;
