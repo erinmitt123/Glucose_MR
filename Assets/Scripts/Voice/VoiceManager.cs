@@ -95,6 +95,23 @@ public class VoiceManager : MonoBehaviour
 
     #endregion
 
+    // Turns on the speech engine with preset parameters
+    private void StartAsrEngine()
+    {
+        SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
+        Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
+        _isMicOn = true;
+    }
+
+    // Turns on the speech engine with custom parameters
+    private void StartAsrEngine(bool isAutoStop, bool isShowPunctuation, int setMaxDuration)
+    {
+        SpeechService.StartAsr(isAutoStop, isShowPunctuation, setMaxDuration);
+        Debug.Log($"engine started, {isAutoStop}, {isShowPunctuation}, {setMaxDuration}");
+        _isMicOn = true;
+    }
+
+
     // Manually force-stops the Speech Engine. Note: This does not stop SpeechService callbacks and can therefore finish before the last callback
     private void StopAsrEngine()
     {
