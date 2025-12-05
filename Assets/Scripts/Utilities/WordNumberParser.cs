@@ -5,173 +5,162 @@ using System.Text.RegularExpressions;
 
 public static class WordNumberParser
 {
-    public static readonly Dictionary<string, int> Units = new Dictionary<string, int>
+    private static readonly Dictionary<string, int> NumberWords = new(StringComparer.OrdinalIgnoreCase)
     {
-        {"zero",0},{"one",1},{"two",2},{"three",3},{"four",4},{"five",5},
-        {"six",6},{"seven",7},{"eight",8},{"nine",9},{"ten",10},
-        {"eleven",11},{"twelve",12},{"thirteen",13},{"fourteen",14},
-        {"fifteen",15},{"sixteen",16},{"seventeen",17},{"eighteen",18},{"nineteen",19}
+        // Basic numbers
+        { "zero", 0 }, { "oh", 0 }, { "one", 1 }, { "two", 2 }, { "three", 3 },
+        { "four", 4 }, { "five", 5 }, { "six", 6 }, { "seven", 7 }, { "eight", 8 }, { "nine", 9 },
+
+        // Teens
+        { "ten", 10 }, { "eleven", 11 }, { "twelve", 12 }, { "thirteen", 13 }, { "fourteen", 14 },
+        { "fifteen", 15 }, { "sixteen", 16 }, { "seventeen", 17 }, { "eighteen", 18 }, { "nineteen", 19 },
+
+        // Tens
+        { "twenty", 20 }, { "thirty", 30 }, { "forty", 40 }, { "fifty", 50 },
+        { "sixty", 60 }, { "seventy", 70 }, { "eighty", 80 }, { "ninety", 90 }
     };
 
-    public static readonly Dictionary<string, int> Tens = new Dictionary<string, int>
+    private static readonly HashSet<string> Multipliers = new(StringComparer.OrdinalIgnoreCase)
     {
-        {"twenty",20},{"thirty",30},{"forty",40},{"fifty",50},
-        {"sixty",60},{"seventy",70},{"eighty",80},{"ninety",90}
+        "hundred", "thousand", "million"
     };
 
-    private static string CleanToken(string token)
+    public static string ConvertWordNumbersInSentence(string sentence)
     {
-        return Regex.Replace(token, @"^[^A-Za-z0-9\-]+|[^A-Za-z0-9\-]+$", "")
-                     .ToLowerInvariant();
-    }
+        if (string.IsNullOrWhiteSpace(sentence))
+            return sentence;
 
-    public static string ConvertWordNumbersInSentence(string input)
-    {
-        if (string.IsNullOrEmpty(input)) return input;
+        string expanded = ExpandHyphens(sentence).ToLower();
+        string[] tokens = expanded.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        string[] originalTokens = input.Split(' ');
-        string[] cleanTokens = new string[originalTokens.Length];
+        double result = 0;
+        double current = 0;
+        bool inDecimal = false;
+        double decimalPlace = 1.0;
 
-        for (int i = 0; i < originalTokens.Length; i++)
-            cleanTokens[i] = CleanToken(originalTokens[i]);
+        int? spanStart = null;
+        int spanEnd = -1;
 
-        var output = new StringBuilder();
-        int index = 0;
-
-        while (index < originalTokens.Length)
+        for (int i = 0; i < tokens.Length; i++)
         {
-            int lookahead = index;
+            string rawWord = tokens[i];
+            string word = rawWord.Trim();
 
-            if (TryParseFullNumber(cleanTokens, ref lookahead, out string numericStr))
+            bool isNumberWord =
+                NumberWords.ContainsKey(word) ||
+                word == "point" ||
+                Multipliers.Contains(word);
+
+            // Mark beginning of number-span
+            if (isNumberWord && spanStart == null)
+                spanStart = i;
+
+            if (word == "and")
+                continue;
+
+            if (word == "point")
             {
-                output.Append(numericStr);
-
-                // Preserve punctuation from last original token
-                string lastOriginal = originalTokens[lookahead - 1];
-                Match m = Regex.Match(lastOriginal, @"([^\w\-]+)$");
-                if (m.Success) output.Append(m.Value);
-
-                index = lookahead;
-            }
-            else
-            {
-                output.Append(originalTokens[index]);
-                index++;
-            }
-
-            if (index < originalTokens.Length)
-                output.Append(" ");
-        }
-
-        return output.ToString().Trim();
-    }
-
-    private static bool TryParseFullNumber(string[] tokens, ref int index, out string result)
-    {
-        result = null;
-        int startIndex = index;
-
-        if (!TryParseWhole(tokens, ref index, out int whole))
-        {
-            index = startIndex;
-            return false;
-        }
-
-        // Decimal part
-        if (index < tokens.Length && tokens[index] == "point")
-        {
-            index++; // skip "point"
-            var decimalSb = new StringBuilder();
-
-            while (index < tokens.Length)
-            {
-                string t = tokens[index];
-
-                if (Units.TryGetValue(t, out int unit))
-                {
-                    decimalSb.Append(unit); // single digit
-                    index++;
-                }
-                else if (Tens.TryGetValue(t, out int ten))
-                {
-                    decimalSb.Append(ten); // two digits
-                    index++;
-                    // Check if a following unit exists, e.g., "twenty one"
-                    if (index < tokens.Length && Units.TryGetValue(tokens[index], out int extra))
-                    {
-                        decimalSb.Append(extra);
-                        index++;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            result = decimalSb.Length > 0 ? $"{whole}.{decimalSb}" : whole.ToString();
-        }
-        else
-        {
-            result = whole.ToString();
-        }
-
-        return true;
-    }
-
-    private static bool TryParseWhole(string[] tokens, ref int index, out int value)
-    {
-        value = 0;
-        int startIndex = index;
-        bool found = false;
-        int acc = 0;
-
-        while (index < tokens.Length)
-        {
-            string t = tokens[index];
-
-            if (string.IsNullOrEmpty(t)) break;
-            if (t == "and") { index++; continue; }
-
-            if (Units.TryGetValue(t, out int u))
-            {
-                acc += u;
-                index++;
-                found = true;
+                inDecimal = true;
+                spanEnd = i;
                 continue;
             }
 
-            if (Tens.TryGetValue(t, out int ten))
+            if (inDecimal)
             {
-                acc += ten;
-                index++;
-                if (index < tokens.Length && Units.TryGetValue(tokens[index], out int extra))
+                if (NumberWords.TryGetValue(word, out int number))
                 {
-                    acc += extra;
-                    index++;
+                    int digitCount = DigitCount(number);
+                    decimalPlace *= Math.Pow(0.1, digitCount);
+
+                    current += number * decimalPlace;
+                    spanEnd = i;
                 }
-                found = true;
                 continue;
             }
 
-            if (t == "hundred")
+            if (NumberWords.TryGetValue(word, out int val))
             {
-                acc = acc == 0 ? 100 : acc * 100;
-                index++;
-                found = true;
-                continue;
+                current += val;
+                spanEnd = i;
             }
-
-            break;
+            else if (word == "hundred")
+            {
+                current *= 100;
+                spanEnd = i;
+            }
+            else if (word == "thousand")
+            {
+                current *= 1000;
+                result += current;
+                current = 0;
+                spanEnd = i;
+            }
+            else if (word == "million")
+            {
+                current *= 1_000_000;
+                result += current;
+                current = 0;
+                spanEnd = i;
+            }
         }
 
-        if (!found)
+        result += current;
+
+        if (spanStart == null)
+            return sentence; // no number found
+
+        return ReplaceFirstNumber(sentence, result, spanStart.Value, spanEnd);
+    }
+
+    // NEW: Replace the correct region instead of appending at the end
+    private static string ReplaceFirstNumber(string originalSentence, double number, int startToken, int endToken)
+    {
+        // Work on original spacing/punctuation
+        string[] origTokens = originalSentence.Split(' ');
+
+        // Safety check if token counts mismatch
+        if (startToken >= origTokens.Length)
+            return originalSentence + $" {number}";
+
+        var sb = new StringBuilder();
+
+        // Add text BEFORE the number region
+        for (int i = 0; i < startToken; i++)
         {
-            index = startIndex;
-            return false;
+            sb.Append(origTokens[i]);
+            if (i < origTokens.Length - 1) sb.Append(" ");
         }
 
-        value = acc;
-        return true;
+        // Determine if the last token has trailing punctuation
+        string lastToken = origTokens[endToken];
+        string punctuation = Regex.Match(lastToken, @"[^\w\-]+$").Value;
+
+        // Add the number
+        sb.Append(number.ToString());
+        sb.Append(punctuation);
+
+        // Add text AFTER the number region
+        for (int i = endToken + 1; i < origTokens.Length; i++)
+        {
+            sb.Append(" ");
+            sb.Append(origTokens[i]);
+        }
+
+        return sb.ToString();
+    }
+
+    private static string ExpandHyphens(string sentence)
+    {
+        StringBuilder sb = new(sentence.Length);
+        foreach (char c in sentence)
+            sb.Append(c == '-' ? ' ' : c);
+        return sb.ToString();
+    }
+
+    private static int DigitCount(int number)
+    {
+        number = Math.Abs(number);
+        if (number == 0) return 1;
+        return (int)Math.Floor(Math.Log10(number)) + 1;
     }
 }
