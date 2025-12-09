@@ -1,0 +1,7 @@
+com.bytedance.pico.secure_mr_demo.food_detection-pngs-0 /Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/build/generated/res/pngs/debug
+com.bytedance.pico.secure_mr_demo.food_detection-resValues-1 /Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/build/generated/res/resValues/debug
+com.bytedance.pico.secure_mr_demo.food_detection-packageDebugResources-2 /Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.bytedance.pico.secure_mr_demo.food_detection-packageDebugResources-3 /Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.bytedance.pico.secure_mr_demo.food_detection-debug-4 /Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/build/intermediates/merged_res/debug/mergeDebugResources
+com.bytedance.pico.secure_mr_demo.food_detection-debug-5 /Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/src/debug/res
+com.bytedance.pico.secure_mr_demo.food_detection-main-6 /Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/src/main/res
