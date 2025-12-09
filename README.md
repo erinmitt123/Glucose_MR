@@ -50,6 +50,11 @@ Because of **SecureMR**, all camera processing happens locally, ensuring complet
 
 ![Banana Nutrition](https://raw.githubusercontent.com/erinmitt123/Glucose_MR/c96a3421def9a5cd7d26e429465f777858789faf/image-assets/banana-nutrition.gif)
 
+### Repository Structure
+This repository contains:
+* **Main Glucose MR application** in the root directory
+* **Food detection module** following SecureMR sample at: https://github.com/erinmitt123/Glucose_MR/food_detection
+
 
 ### Privacy via SecureMR
 * This project was forked from the **[SecureMR Samples repository](https://github.com/Pico-Developer/SecureMR_Samples/)** and follows its structure.
