@@ -1,4 +1,0 @@
-/Users/liviaellen/Library/Android/sdk/cmake/3.22.1/bin/ninja \
-  -C \
-  /Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/.cxx/Debug/1c5v1q2m/arm64-v8a \
-  food_detection

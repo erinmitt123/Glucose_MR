@@ -1,4 +1,0 @@
-ninja: Entering directory `/Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/.cxx/Debug/1c5v1q2m/arm64-v8a'
-[0/2] Re-checking globbed directories...
-[1/2] Building CXX object CMakeFiles/food_detection.dir/cpp/yolo_object_detection.cpp.o
-[2/2] Linking CXX shared module ../../../../build/intermediates/cxx/Debug/1c5v1q2m/obj/arm64-v8a/libfood_detection.so

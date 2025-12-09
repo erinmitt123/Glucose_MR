@@ -1,4 +1,0 @@
-/Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/.cxx/Debug/1c5v1q2m/arm64-v8a/CMakeFiles/food_detection.dir
-/Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/.cxx/Debug/1c5v1q2m/arm64-v8a/CMakeFiles/run_glsl_compiles.dir
-/Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/.cxx/Debug/1c5v1q2m/arm64-v8a/CMakeFiles/edit_cache.dir
-/Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/.cxx/Debug/1c5v1q2m/arm64-v8a/CMakeFiles/rebuild_cache.dir

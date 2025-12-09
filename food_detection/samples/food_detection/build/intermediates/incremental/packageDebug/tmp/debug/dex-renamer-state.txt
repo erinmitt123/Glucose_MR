@@ -1,7 +1,0 @@
-#Sun Nov 16 10:17:44 PST 2025
-base.0=/Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
-base.1=/Users/liviaellen/Desktop/project/glucoseMR/glucose-ml-testing/yolocpp/SecureMR_Samples/samples/food_detection/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
-path.0=classes.dex
-path.1=0/classes.dex
-renamed.0=classes.dex
-renamed.1=classes2.dex
