@@ -1,0 +1,23 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "Secure MR Demos"
+include 'samples:ufo'
+include 'samples:pose'
+include 'samples:ufo_origin'
+include 'samples:yolo_det'
+include 'samples:food_detection'
+
