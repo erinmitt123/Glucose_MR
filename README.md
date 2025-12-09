@@ -42,7 +42,8 @@ Because of **SecureMR**, all camera processing happens locally, ensuring complet
 
 ### Food Detection
 * Integrated an **open-source YOLO model** to identify common foods in real time.
-* For the MVP we used the standard YOLO implementation.
+* The YOLO model detects multiple object classes, but we **filter detections to only food objects** to focus on nutrition-relevant items for diabetes management.
+* For the MVP we used the standard YOLO implementation with food-only filtering.
 * Future improvements include **deploying an optimized ONNX version** for higher FPS and lower latency on the PICO headset.
 
 ![Banana Object Detection](https://raw.githubusercontent.com/erinmitt123/Glucose_MR/c96a3421def9a5cd7d26e429465f777858789faf/image-assets/banana-object.gif)
@@ -51,6 +52,7 @@ Because of **SecureMR**, all camera processing happens locally, ensuring complet
 
 
 ### Privacy via SecureMR
+* This project was forked from the **[SecureMR Samples repository](https://github.com/Pico-Developer/SecureMR_Samples/)** and follows its structure.
 * SecureMR ensures **no raw camera data leaves the device**.
 * Developers cannot access user camera frames.
 * All inference and processing happens fully on-device.
