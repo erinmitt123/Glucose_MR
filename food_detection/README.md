@@ -1,75 +1,111 @@
-## Sample: Food Detection
+# Food Detection for SecureMR
 
-This sample builds an application for PICO using the SecureMR
-APIs. The application demonstrates real-time food detection
-using a YOLOX model converted from ONNX format.
+## Real-time Food Detection Application
 
-This app detects only 10 food items: banana, apple, sandwich, orange,
-broccoli, carrot, hot dog, pizza, donut, and cake.
+![Food Detection Demo](https://raw.githubusercontent.com/erinmitt123/Glucose_MR/c96a3421def9a5cd7d26e429465f777858789faf/image-assets/banana-object.gif)
 
-![Demo of YOLO making detections on objects on the desk](../../docs/Demo-YOLO.gif)
+This project demonstrates real-time food detection capabilities using SecureMR on PICO 4 Ultra devices. The application uses a YOLOX model to detect and identify 10 common food items in mixed reality.
 
-### Code Walk-through
+## Detected Food Items
 
-The implementation follows a pipeline-based architecture with four main stages:
+The application can detect the following food items:
+- Banana
+- Apple
+- Sandwich
+- Orange
+- Broccoli
+- Carrot
+- Hot dog
+- Pizza
+- Donut
+- Cake
 
-1. **VST Image Pipeline**
-   - Handles camera feed processing
-   - Converts raw camera input to appropriate formats (uint8 and fp32)
-   - Manages camera timestamps and matrices
+## Model Used
 
-2. **Model Inference Pipeline**
-   - Processes the prepared images through the YOLO model
-   - Performs class selection and NMS (Non-Maximum Suppression)
-   - Outputs bounding boxes and confidence scores
+| Application | Model | Source |
+|------------|-------|--------|
+| Food Detection | YOLOv11 Detection (YOLOX variant) | [Qualcomm AI Hub - YOLOv11 Detection](https://aihub.qualcomm.com/models/yolov11_det?searchTerm=yolo) |
 
-3. **2D to 3D Mapping Pipeline**
-   - Maps 2D detection results to 3D space
-   - Uses stereo camera information for depth estimation
-   - Generates 3D coordinates for detected objects
+## Project Overview
 
-4. **Rendering Pipeline**
-   - Visualizes detection results in the XR environment
-   - Renders bounding boxes and labels using GLTF assets
-   - Handles scale and positioning of visual elements
+This project demonstrates the functionalities and usage of the SecureMR interfaces through a food detection application. The application achieves customized MR-based effects with deployment of an optimized YOLO-based machine learning model.
 
-### Key Components
+The project provides utility classes located under [`./base/securemr_utils`](base/securemr_utils/README.md) to simplify development of SecureMR-enabled applications.
 
-The <mcsymbol name="YoloDetector" filename="yolo_object_detection.h" path="/Users/bytedance/Projects/SecureMR_Samples/samples/yolo_det/cpp/yolo_object_detection.h" startline="29" type="class"></mcsymbol> class manages:
+A Docker configuration is contained under the `Docker/` directory for deploying custom algorithm packages.
 
-- **Framework Setup**: Initializes SecureMR runtime and pipeline components
-- **Pipeline Management**: Creates and coordinates four main processing pipelines
-- **Data Flow**: Uses GlobalTensors for inter-pipeline communication
-- **Resource Management**: Handles GLTF assets and tensor memory
-- **Threading**: Implements multi-threaded pipeline execution
+## Repository Structure
 
-### Configuration
-
-- Model path: `yolom.serialized.bin`
-- GLTF asset path: `frame2.gltf`
-- Detection threshold: `0.2` (lowered for better food detection sensitivity)
-- Food classes filtered: Only 10 specific food items detected
-- Supports both left and right camera inputs for stereo processing
-
-### Build and Install
-
-To build the project:
-```bash
-./gradlew :samples:food_detection:assembleDebug
+```
+.
+├── Docker
+|                Docker files and resources to convert ML algorithm packages
+├── assets
+│   │            Assets required for the food detection application
+│   │
+│   └── common
+│                Assets shared by all components
+│
+├── base
+│   │            Base source codes including fundamental OpenXR code
+│   │
+│   ├── oxr_utils
+│   │            Utility for fundamental OpenXR APIs, such as
+│   │            XR API result verification and Vulkan renderer
+│   │
+│   ├── securemr_utils
+│   │            Utility classes to simplify SecureMR development
+│   │
+│   └── vulkan_shaders
+|                Vulkan shaders for rendering
+|
+├── docs
+│                Documentation files
+|
+├── external
+|                External dependencies
+|
+├── samples
+│   │            Sample application directory
+│   │
+│   └── food_detection
+│                Real-time food detection application using YOLO model
+|
+└── ...
 ```
 
-To install on Pico device:
+## Prerequisite
+
+#### (A) To run the application, you will need
+
+1. A PICO 4 Ultra device with the latest system update (OS version >= 5.14.0U)
+2. Android Studio, with the Android SDK and NDK installed.
+   - You can install the Android SDK via the SDK Manager in Android Studio (`Tools` > `SDK Manager`).
+   - You will need Android SDK Platform 34. You can install it from the `SDK Platforms` tab in the SDK Manager.
+   - The suggested NDK version is 25. You can install a specific NDK version from the `SDK Tools` tab. Check "Show Package Details", find `NDK (Side by side)` and select a `25.x.x` version to install.
+3. Gradle and Android Gradle plugin (usually bundled with Android Studio install),
+   suggested Gradle version = 8.7, Android Gradle Plugin version = 8.3.2
+4. Java version at least 17 (required by the Android Gradle Plugin), recommended to be 21
+
+#### (B) To run Docker for model conversion, you will need
+
+1. Docker Desktop installed
+
+## Deployment and Test
+
+1. Install and configure according to the [prerequisite](#prerequisite).
+1. Open the repository root in Android Studio as an Android project
+1. After project sync, you will find the `food_detection` module under the `samples` folder
+1. Connect to a PICO 4 Ultra device with the latest OS update installed
+1. Select the `food_detection` module and click the launch button
+
+Alternatively, build and install via command line:
 ```bash
+./gradlew :samples:food_detection:assembleDebug
 adb install -r samples/food_detection/build/outputs/apk/debug/food_detection-debug.apk
 ```
 
-### Technical Details
+## PICO Developer Reference
 
-The implementation uses SecureMR's pipeline architecture for efficient:
-- Tensor operations
-- Multi-threaded execution
-- Hardware-accelerated processing
-- XR session management
-- Real-time visualization
-
-Each pipeline can be monitored and controlled independently, with synchronized data flow managed through global tensors.
+You can view the full SecureMR documentation via
+[this link to PICO Developer website](https://developer-cn.picoxr.com/document/native/securemr-overview/).
