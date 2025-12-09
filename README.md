@@ -53,7 +53,7 @@ Because of **SecureMR**, all camera processing happens locally, ensuring complet
 ### Repository Structure
 This repository contains:
 * **Main Glucose MR application** in the root directory
-* **Food detection module** following SecureMR sample at: https://github.com/erinmitt123/Glucose_MR/food_detection
+* **Food detection module** following SecureMR sample at: [https://github.com/erinmitt123/Glucose_MR/food_detection](https://github.com/erinmitt123/Glucose_MR/tree/main/food_detection)
 
 
 ### Privacy via SecureMR
