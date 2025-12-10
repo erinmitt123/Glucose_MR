@@ -2,6 +2,8 @@ using System;
 using TMPro;
 using UnityEngine;
 
+//This script switches between which ui is active
+
 public class UIControllerScript : MonoBehaviour
 {
     public GameObject diabetesCanvas;

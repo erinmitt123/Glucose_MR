@@ -287,7 +287,6 @@ GameObject:
   - component: {fileID: 2818426659737622326}
   - component: {fileID: 4515159240243837341}
   - component: {fileID: 7252348325505647009}
-  - component: {fileID: 2207703594019427657}
   m_Layer: 5
   m_Name: FoodCanvas
   m_TagString: Untagged
@@ -448,20 +447,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   csvFile: {fileID: 4900000, guid: bea08553b5fca7849871044dacf22709, type: 3}
   csvFileDict: {fileID: 4900000, guid: b13205f50a54fde4aa12cccb475c3dec, type: 3}
---- !u!114 &2207703594019427657
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2791150435249235592}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d82d56d26ccd37b4a9439d30ff2a1817, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  csvFileDict: {fileID: 0}
-  foodInfo: {fileID: 4515159240243837341}
 --- !u!1 &3268904722919357557
 GameObject:
   m_ObjectHideFlags: 0

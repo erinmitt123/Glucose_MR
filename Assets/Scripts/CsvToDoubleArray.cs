@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class CsvToDoubleArray : MonoBehaviour
 {
+
+    /*Parses the MyFoodData (SR Legacy + FNDDS) food array database and
+     * a dictionary with all the food macros needed
+     */
     public static CsvToDoubleArray Instance { get; private set; }
 
     public TextAsset csvFile;
@@ -35,6 +39,7 @@ public class CsvToDoubleArray : MonoBehaviour
         FoodInfo.Instance.UpdateValuesAndDisplay();
     }
 
+    //parses converter from id in USDA database and string food name
     public Dictionary<string, int> ParseToDictionary()
     {
         Dictionary<string, int> dict = new Dictionary<string, int>();
@@ -57,6 +62,9 @@ public class CsvToDoubleArray : MonoBehaviour
         return dict;
     }
 
+    //parses usda database
+    //note the columns and rows wanted are currently edited to only include needed info. 
+    //This could easily be rewritten to only take the columns wanted, especially with the column names being selected for
     public double[][] ParseCsv(string csvText)
     {
         return csvText
