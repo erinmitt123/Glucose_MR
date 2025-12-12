@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Security.Cryptography;
 using UnityEngine;
-using static UnityEditor.Rendering.CameraUI;
 using UnityEngine.Windows;
 
 public class UtilsTest : MonoBehaviour
