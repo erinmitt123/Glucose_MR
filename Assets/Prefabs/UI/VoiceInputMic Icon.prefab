@@ -103,7 +103,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftController: {fileID: 0}
   rightController: {fileID: 0}
-  hoverHeight: 0.2
 --- !u!114 &441569137065835188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,4 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1415b0d118322ee44b397233175fe025, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 5
+  hoverHeight: 0.08
+  forwardOffset: 0.05
+  rotationSpeed: 2
+  targetController: {fileID: 0}

@@ -26,6 +26,8 @@ public class VoiceIcon : MonoBehaviour
     {
         // Determines which controller transform to parent to
         follow.targetController = isLeft ? leftController : rightController;
+        follow.SetInitialPositionAndRotation();
+
         gameObject.SetActive(true);
     }
 

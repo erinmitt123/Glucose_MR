@@ -5,6 +5,8 @@ public class SmoothBillboardFollow : MonoBehaviour
     [Header("Positioning")]
     [Tooltip("How far the sprite should hover above the controller in world space.")]
     public float hoverHeight = 0.1f;
+    [Tooltip("How far the sprite should be offset forward/away from the user (World Z-plane).")]
+    public float forwardOffset = 0.05f;
 
     [Header("Rotation Settings")]
     [Tooltip("How fast the sprite rotates to face the user.")]
@@ -35,10 +37,26 @@ public class SmoothBillboardFollow : MonoBehaviour
         HandleSmoothBillboarding();
     }
 
+    // Public function to set before the game object is set active, to prevent jumping
+    public void SetInitialPositionAndRotation()
+    {
+        HandlePositioning();
+        HandleSmoothBillboarding();
+    }
+
+
     private void HandlePositioning()
     {
+        // Get the directional vector the controller is being viewed from
+        Vector3 cameraToControllerDir = targetController.position - mainCameraTransform.position;
+        cameraToControllerDir.y = 0; // Flatten the vector
+        cameraToControllerDir.Normalize();
+
         // Calculate the target position: the controller's position plus the hover height on its local Y-axis.
         Vector3 targetPosition = targetController.position + Vector3.up * hoverHeight;
+
+        // Pushes the icon AWAY from the camera along the flattened Camera->Controller direction.
+        targetPosition += cameraToControllerDir * forwardOffset;
 
         // Set the sprite's position instantly to follow the controller
         transform.position = targetPosition;
