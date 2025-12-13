@@ -1,4 +1,4 @@
-package applicationpermissions;
+package applicationPermissions;
 
 import android.app.Activity;
 import android.content.Intent;

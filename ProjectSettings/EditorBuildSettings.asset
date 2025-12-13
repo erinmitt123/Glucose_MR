@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/SecureMRMonobehavior.unity
     guid: 3db4825f755494df2b680b14a43bb792
   - enabled: 0
-    path: Assets/Scenes/MinimalApp.unity
+    path: Assets/Scenes/Deprecated/MinimalApp.unity
     guid: c4220b2c4650446068ce7489529219bf
   - enabled: 0
     path: Assets/Scenes/MnistwildDemoMonobehaviour.unity
@@ -30,14 +30,17 @@ EditorBuildSettings:
     path: Assets/Scenes/UFODemo.unity
     guid: 92310e2c2b7fa4904b63899f39292c39
   - enabled: 0
-    path: Assets/Scenes/UIScene.unity
+    path: Assets/Scenes/Deprecated/UIScene.unity
     guid: 2370b384cd8bbe34dbe8a1764f867209
   - enabled: 0
     path: Assets/Scenes/UIScene2.unity
     guid: 5a08d38fd3385844cbc3d3d0d6b723dc
-  - enabled: 1
-    path: Assets/Scenes/VoiceControlTest.unity
+  - enabled: 0
+    path: Assets/Scenes/Deprecated/FailsToMR_FormerVoiceTest.unity
     guid: 05470d9282981ef4397c0d5628e40ae4
+  - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: 7cc2b8afd30aaac49893c5011b6c610b
   m_configObjects:
     Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: eae7a8c248df266438c1a1a7d5a9520a, type: 2}
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: 9801a56ed26d34dc0936cb367ad2a8a5, type: 2}

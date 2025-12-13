@@ -44,6 +44,28 @@ public class VoiceManager : MonoBehaviour
         InitializeAsrEngine();
     }
 
+    #region Android-Version-Dependent Permission Setup
+
+    private bool IsAndroidAbove12()
+    {
+        using (var version = new AndroidJavaClass("android.os.Build$VERSION"))
+        {
+            int sdkInt = version.GetStatic<int>("SDK_INT");
+            return sdkInt > 32;
+        }
+    }
+
+    private void ForceRequestStoragePermission()
+    {
+        AndroidJavaObject javaObj = new AndroidJavaObject("applicationPermissions.AndroidPermissions");
+        AndroidJavaClass jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        AndroidJavaObject jo = jc.GetStatic<AndroidJavaObject>("currentActivity");
+        javaObj.Call("setUnityActivity", jo);
+        javaObj.Call("requestExternalStorage");
+    }
+
+    #endregion
+
     #region Setup
 
     // Checks if necessary permissions have been granted for using the speech service
@@ -56,12 +78,29 @@ public class VoiceManager : MonoBehaviour
             Permission.RequestUserPermission(Permission.Microphone);
         }
 
-        // Storage-Write Permission
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
+#if UNITY_ANDROID && !UNITY_EDITOR
+
+        if (IsAndroidAbove12()) 
         {
-            Debug.Log("Permission wasn't given for write");
-            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+            ForceRequestStoragePermission();
         }
+        else
+        {
+            if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
+            {
+                Debug.Log("Permission wasn't given for EXTERNAL_READ");
+                Permission.RequestUserPermission(Permission.ExternalStorageRead);
+            }
+
+            if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
+            {
+                Debug.Log("Permission wasn't given for EXTERNAL_WRITE");
+                Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+            }
+        }
+        
+#endif
+
     }
 
     // Mandatory code to initialize the speech engine so it's accessible to the user on command
@@ -102,7 +141,7 @@ public class VoiceManager : MonoBehaviour
         });
     }
 
-    #endregion
+#endregion
 
     // Turns on the speech engine with preset parameters
     private void StartAsrEngine()
@@ -123,7 +162,7 @@ public class VoiceManager : MonoBehaviour
         if (useUI) voiceIcon.Deactivate();
         _isMicOn = false;
 
-        ApplicationManager.Instance.ParseVoice();
+        ParseManager.Instance.ParseVoice();
     }
 
 
