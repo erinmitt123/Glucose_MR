@@ -3,6 +3,9 @@ using TMPro;
 using UnityEngine.Android;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR;
+using System.Linq;
+using CommonUsages = UnityEngine.InputSystem.CommonUsages;
 
 
 public class VoiceManager : MonoBehaviour
@@ -21,8 +24,13 @@ public class VoiceManager : MonoBehaviour
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] private InputActionReference micAction;
 
+    [Header("Optional UI")]
+    public bool useUI;
+    [SerializeField] VoiceUI voiceIcon;
+
     private bool _inited = false;
     private bool _isMicOn = false;
+    private bool _isLeftController = false;
 
 
     private void Awake()
@@ -90,6 +98,7 @@ public class VoiceManager : MonoBehaviour
         {
             var m = msg.Data;
             Debug.Log($"SpeechError :{JsonUtility.ToJson(m)}");
+            StopAsrEngine();
         });
     }
 
@@ -100,24 +109,19 @@ public class VoiceManager : MonoBehaviour
     {
         SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
         Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
+
+        if (useUI) voiceIcon.Activate(_isLeftController);
         _isMicOn = true;
     }
-
-    // Turns on the speech engine with custom parameters
-    private void StartAsrEngine(bool isAutoStop, bool isShowPunctuation, int setMaxDuration)
-    {
-        SpeechService.StartAsr(isAutoStop, isShowPunctuation, setMaxDuration);
-        Debug.Log($"engine started, {isAutoStop}, {isShowPunctuation}, {setMaxDuration}");
-        _isMicOn = true;
-    }
-
 
     // Manually force-stops the Speech Engine. Note: This does not stop SpeechService callbacks and can therefore finish before the last callback
     private void StopAsrEngine()
     {
         SpeechService.StopAsr();
-        _isMicOn = false;
         Debug.Log("engine stopped");
+
+        if (useUI) voiceIcon.Deactivate();
+        _isMicOn = false;
 
         ApplicationManager.Instance.ParseVoice();
     }
@@ -138,39 +142,33 @@ public class VoiceManager : MonoBehaviour
             return;
         }
 
-        // Triggers the appropriate speech service controls
-        if (autoStop) AutostopMic();
-        else ManualMic();
-    }
+        if (useUI)
+        {
+            // Determine which hand controller triggered the mic for hand-specific UI interactions
+            var controllerInputDevice = context.control.device;
+            if (controllerInputDevice.usages.Contains(CommonUsages.LeftHand))
+            {
+                Debug.Log("ACTION TRIGGERED BY LEFT");
+                _isLeftController = true;
+            }
+            else
+            {
+                Debug.Log("ACTION TRIGGERED BY RIGHT");
+                _isLeftController = false;
+            }
+        }
 
-    // Turns on the speech engine without a manual option to stop it
-    private void AutostopMic()
-    {
-        SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
-        Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
-        _isMicOn = true;
+        // Triggers the appropriate speech service controls
+        if (autoStop) StartAsrEngine();
+        else ManualMic();
     }
 
     // Turns on or off the speech engine using the same input trigger
     // TODO: Buggy and untested on headset
     private void ManualMic()
     {
-       
-        if (!_isMicOn)
-        {
-            SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
-            Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
-            _isMicOn = true;
-        }
-        else
-        {
-            SpeechService.StopAsr();
-            Debug.Log("engine stopped");
-            _isMicOn = false;
-
-            ApplicationManager.Instance.ParseVoice();
-        }
-           
+        if (!_isMicOn) StartAsrEngine();
+        else StopAsrEngine();           
     }
 
     private void OnEnable()
