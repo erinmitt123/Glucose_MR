@@ -14,13 +14,15 @@ public class VoiceUI : MonoBehaviour
 
     private SmoothBillboardFollow follow;
     private AudioSource audioSource;
-    private SpriteRenderer spriteRenderer;
+    private SpriteFader spriteFader;
+    private PulseScale pulseScaler;
 
     private void Start()
     {
         follow = GetComponent<SmoothBillboardFollow>();
         audioSource = GetComponent<AudioSource>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteFader = GetComponent<SpriteFader>();
+        pulseScaler = GetComponent<PulseScale>();
 
         DeactivateVisuals();
     }
@@ -57,7 +59,11 @@ public class VoiceUI : MonoBehaviour
     {
         follow.SetInitialPositionAndRotation();
         follow.enabled = true;
-        spriteRenderer.enabled = true;
+
+        pulseScaler.ResetScale();
+        pulseScaler.enabled = true;
+
+        spriteFader.FadeIn();
     }
 
     private void ActivateSound()
@@ -69,7 +75,8 @@ public class VoiceUI : MonoBehaviour
     private void DeactivateVisuals()
     {
         follow.enabled = false;
-        spriteRenderer.enabled = false;
+        pulseScaler.enabled = false;
+        spriteFader.FadeOut();
     }
 
     private void DeactivateSound()
