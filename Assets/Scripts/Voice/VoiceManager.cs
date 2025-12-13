@@ -26,7 +26,7 @@ public class VoiceManager : MonoBehaviour
 
     [Header("Optional UI")]
     public bool useUI;
-    [SerializeField] VoiceIcon voiceIcon;
+    [SerializeField] VoiceUI voiceIcon;
 
     private bool _inited = false;
     private bool _isMicOn = false;
@@ -110,7 +110,7 @@ public class VoiceManager : MonoBehaviour
         SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
         Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
 
-        if (useUI) voiceIcon.ActivateAndSetController(_isLeftController);
+        if (useUI) voiceIcon.Activate(_isLeftController);
         _isMicOn = true;
     }
 
@@ -120,7 +120,7 @@ public class VoiceManager : MonoBehaviour
         SpeechService.StopAsr();
         Debug.Log("engine stopped");
 
-        if (useUI) voiceIcon.DeactivateAndUnsetController();
+        if (useUI) voiceIcon.Deactivate();
         _isMicOn = false;
 
         ApplicationManager.Instance.ParseVoice();
