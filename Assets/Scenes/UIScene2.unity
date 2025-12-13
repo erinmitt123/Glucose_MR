@@ -175,58 +175,24 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8243079844860869268, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: leftController
+      value: 
+      objectReference: {fileID: 861181181}
+    - target: {fileID: 8243079844860869268, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: rightController
+      value: 
+      objectReference: {fileID: 1670256625}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
---- !u!1 &879864288
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 879864290}
-  - component: {fileID: 879864289}
-  m_Layer: 0
-  m_Name: ColorPicker
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &879864289
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 879864288}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05a632a5303e94a6a89258164f018765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cubeGltfAsset: {fileID: 4900000, guid: 215f8bdf2c1f043419ef4dd8eb68fa23, type: 3}
-  cubePosition: {fileID: 1670256625}
-  pickColorEveryXSeconds: 0.1
---- !u!4 &879864290
+--- !u!4 &861181181 stripped
 Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 7729281836364044803, guid: c9eca42743b162d44a13afc1c6f274ab, type: 3}
+  m_PrefabInstance: {fileID: 8850811814160960365}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 879864288}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &928811618
 GameObject:
   m_ObjectHideFlags: 0
@@ -985,7 +951,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 928811620}
   - {fileID: 8850811814160960365}
-  - {fileID: 879864290}
   - {fileID: 7200531819356784263}
   - {fileID: 1157282176}
   - {fileID: 6608239411428183610}

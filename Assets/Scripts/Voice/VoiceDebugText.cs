@@ -9,7 +9,7 @@ public class VoiceDebugText : MonoBehaviour
     private void Start()
     {
         text = GetComponent<TMP_Text>();
-        voiceManager = ApplicationManager.Instance.voiceManager;
+        voiceManager = ParseManager.Instance.voiceManager;
     }
 
     private void Update()

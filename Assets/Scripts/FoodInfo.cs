@@ -98,8 +98,8 @@ public class FoodInfo : MonoBehaviour
     {
         isTypeOne = other.isTypeOne;
 
-        glucoseVal = ApplicationManager.Instance.glucoseLevel;
-        secureMLValues = CsvToDoubleArray.Instance.nutritionDataArray[ApplicationManager.Instance.identifiedObjectIndex];
+        glucoseVal = ParseManager.Instance.glucoseLevel;
+        secureMLValues = CsvToDoubleArray.Instance.nutritionDataArray[ParseManager.Instance.identifiedObjectIndex];
 
         Debug.Log("FoodInfo received " + secureMLValues.Length + " values.");
         food.text = "Food: "+  GetStringForInt((int)secureMLValues[8]);
