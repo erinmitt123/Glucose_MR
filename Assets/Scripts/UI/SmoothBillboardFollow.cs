@@ -2,9 +2,15 @@ using UnityEngine;
 
 public class SmoothBillboardFollow : MonoBehaviour
 {
+    [Header("Positioning")]
+    [Tooltip("How far the sprite should hover above the controller in world space.")]
+    public float hoverHeight = 0.1f;
+
     [Header("Rotation Settings")]
     [Tooltip("How fast the sprite rotates to face the user.")]
     public float rotationSpeed = 5f;
+
+    [HideInInspector] public Transform targetController;
 
     // Cached reference to the main camera's transform (the user's view or central eye anchor)
     private Transform mainCameraTransform;
@@ -25,7 +31,17 @@ public class SmoothBillboardFollow : MonoBehaviour
     private void Update()
     {
         // Doesn't need a check since the behavior is disabled in Start if values aren't found or assigned
+        HandlePositioning();
         HandleSmoothBillboarding();
+    }
+
+    private void HandlePositioning()
+    {
+        // Calculate the target position: the controller's position plus the hover height on its local Y-axis.
+        Vector3 targetPosition = targetController.position + Vector3.up * hoverHeight;
+
+        // Set the sprite's position instantly to follow the controller
+        transform.position = targetPosition;
     }
 
     private void HandleSmoothBillboarding()

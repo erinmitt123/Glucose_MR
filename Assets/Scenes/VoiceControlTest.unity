@@ -1990,14 +1990,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2528949789591243253, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3089171574421804273, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
-      propertyPath: displayAsrResult
-      value: 
-      objectReference: {fileID: 1729001514}
     - target: {fileID: 7227106005070564799, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
       propertyPath: m_Name
       value: ApplicationManager
@@ -2005,11 +1997,11 @@ PrefabInstance:
     - target: {fileID: 8243079844860869268, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
       propertyPath: leftController
       value: 
-      objectReference: {fileID: 716906830792148215}
+      objectReference: {fileID: 202364688}
     - target: {fileID: 8243079844860869268, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
       propertyPath: rightController
       value: 
-      objectReference: {fileID: 8718302446126152263}
+      objectReference: {fileID: 1670256625}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent (typeof(SmoothBillboardFollow))]
 public class VoiceIcon : MonoBehaviour
 {
     [Header("Controller Reference Points")]
@@ -7,13 +8,12 @@ public class VoiceIcon : MonoBehaviour
     [SerializeField] private Transform leftController;
     [SerializeField] private Transform rightController;
 
-    [Header("Positioning")]
-    [Tooltip("How far the sprite should hover above the controller in world space.")]
-    public float hoverHeight = 0.15f;
+    private SmoothBillboardFollow follow;
 
     private void Start()
     {
-        DeactivateAndUnparent();
+        follow = GetComponent<SmoothBillboardFollow>();
+        DeactivateAndUnsetController();
     }
 
     #region -----PUBLIC METHODS FOR CONTROLLER INPUT-----
@@ -22,34 +22,20 @@ public class VoiceIcon : MonoBehaviour
     /// Called when the user presses the input (e.g., the Grip button) on an XR Controller.
     /// </summary>
     /// <param name="controller">The Transform of the XR Controller that pressed the button.</param>
-    public void ActivateAndParentToController(bool isLeft)
+    public void ActivateAndSetController(bool isLeft)
     {
         // Determines which controller transform to parent to
-        Transform controller = isLeft ? leftController : rightController;
-
-        // Parent the sprite to the controller's transform
-        transform.SetParent(controller);
-
-        // Calculate the target position in WORLD SPACE: Controller Position + World UP (Vector3.up) offset.
-        Vector3 worldTargetPosition = controller.position + Vector3.up * hoverHeight;
-
-        // Convert that World Space position into Local Space relative to the new parent.
-        transform.localPosition = controller.InverseTransformPoint(worldTargetPosition);
-
-        // Reset local rotation to prevent strange inherited rotations
-        transform.localRotation = Quaternion.identity;
-
-        // Activate the sprite GameObject
+        follow.targetController = isLeft ? leftController : rightController;
         gameObject.SetActive(true);
     }
 
     /// <summary>
     /// Called when the user releases the input (e.g., the Trigger button).
     /// </summary>
-    public void DeactivateAndUnparent()
+    public void DeactivateAndUnsetController()
     {
         gameObject.SetActive(false);
-        transform.SetParent(null);
+        follow.targetController = null;
     }
 
     #endregion

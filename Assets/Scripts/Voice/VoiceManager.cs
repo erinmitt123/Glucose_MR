@@ -98,6 +98,7 @@ public class VoiceManager : MonoBehaviour
         {
             var m = msg.Data;
             Debug.Log($"SpeechError :{JsonUtility.ToJson(m)}");
+            StopAsrEngine();
         });
     }
 
@@ -109,7 +110,7 @@ public class VoiceManager : MonoBehaviour
         SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
         Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
 
-        if (useUI) voiceIcon.ActivateAndParentToController(_isLeftController);
+        if (useUI) voiceIcon.ActivateAndSetController(_isLeftController);
         _isMicOn = true;
     }
 
@@ -119,7 +120,7 @@ public class VoiceManager : MonoBehaviour
         SpeechService.StopAsr();
         Debug.Log("engine stopped");
 
-        if (useUI) voiceIcon.DeactivateAndUnparent();
+        if (useUI) voiceIcon.DeactivateAndUnsetController();
         _isMicOn = false;
 
         ApplicationManager.Instance.ParseVoice();
