@@ -100,3 +100,7 @@ InitTestScene*.unity*
 user.keystore
 Assets/MLModels/yolom.serialized.bin
 Assets/MLModels/yolom.serialized.bytes
+
+# Android NDK (should be downloaded locally, not committed)
+**/ndk/
+food_detection/ndk/
