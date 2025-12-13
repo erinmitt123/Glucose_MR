@@ -7,7 +7,7 @@ public class ApplicationManager : MonoBehaviour
 {
     public static ApplicationManager Instance { get; private set; }
 
-    [SerializeField] VoiceManager voiceManager;
+    public VoiceManager voiceManager;
 
     [Header("Runtime Values")]
     public double glucoseLevel = 100.00;
@@ -70,7 +70,7 @@ public class ApplicationManager : MonoBehaviour
     {
         if (voiceManager.storedAsrResult == null)
         {
-            Debug.Log("The glucose hasn't been shared yet. Please use the mic button to share your reading");
+            Debug.Log("No speech detected. Please use the mic button to share your reading");
             return;
         }
 

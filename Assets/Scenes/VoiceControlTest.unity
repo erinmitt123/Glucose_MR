@@ -645,6 +645,7 @@ GameObject:
   - component: {fileID: 1729001513}
   - component: {fileID: 1729001515}
   - component: {fileID: 1729001514}
+  - component: {fileID: 1729001516}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -770,6 +771,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1729001512}
   m_CullTransparentMesh: 1
+--- !u!114 &1729001516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1729001512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1abef48bd2e36f74db9223cd2726dbbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1767192433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1977,14 +1990,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3089171574421804273, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
-      propertyPath: displayAsrResult
-      value: 
-      objectReference: {fileID: 1729001514}
     - target: {fileID: 7227106005070564799, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
       propertyPath: m_Name
       value: ApplicationManager
       objectReference: {fileID: 0}
+    - target: {fileID: 8243079844860869268, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: leftController
+      value: 
+      objectReference: {fileID: 202364688}
+    - target: {fileID: 8243079844860869268, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: rightController
+      value: 
+      objectReference: {fileID: 1670256625}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
