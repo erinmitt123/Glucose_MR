@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR;
 using System.Linq;
 using CommonUsages = UnityEngine.InputSystem.CommonUsages;
+using UnityEngine.XR.Hands;
 
 
 public class VoiceManager : MonoBehaviour
@@ -20,8 +21,7 @@ public class VoiceManager : MonoBehaviour
     [SerializeField] private bool showPunctuation = true; 
 
     // How the Speech Service can be triggered by the user
-    [Header("Controller References")]
-    [SerializeField] private InputActionAsset inputActions;
+    [Header("Input Action References")]
     [SerializeField] private InputActionReference micAction;
 
     [Header("Optional UI")]
@@ -30,7 +30,7 @@ public class VoiceManager : MonoBehaviour
 
     private bool _inited = false;
     private bool _isMicOn = false;
-    private bool _isLeftController = false;
+    private bool _isLeft = false;
 
 
     private void Awake()
@@ -149,7 +149,7 @@ public class VoiceManager : MonoBehaviour
         SpeechService.StartAsr(autoStop, showPunctuation, maxDuration);
         Debug.Log($"engine started, {autoStop}, {showPunctuation}, {maxDuration}");
 
-        if (useUI) voiceIcon.Activate(_isLeftController);
+        if (useUI) voiceIcon.Activate(_isLeft);
         _isMicOn = true;
     }
 
@@ -165,36 +165,38 @@ public class VoiceManager : MonoBehaviour
         ParseManager.Instance.ParseVoice();
     }
 
-
     #region Mic Input Controls
 
     // Event subcriber to verify the user is trying to trigger the mic and to perform the appropriate action based on if autostop is on
-    public void OnMicControlInput(InputAction.CallbackContext context)
+    public void OnMicControllerInput(InputAction.CallbackContext context)
     {
         // Verifies the button was pressed and the engine is ready, else exits
         if (!context.started) return;
         Debug.Log("Grip Button Pressed");
 
+        // Determine which hand controller triggered the mic for hand-specific UI interactions
+        if (useUI)
+            _isLeft = context.control.device.usages.Contains(CommonUsages.LeftHand);
+
+        TriggerSpeechService();
+    }
+
+    public void MicHandGestureInput(Handedness hand)
+    {
+        Debug.Log("Mic Hand Gesture Started");
+
+        if (useUI)
+            _isLeft = hand == Handedness.Left;
+
+        TriggerSpeechService();
+    }
+
+    private void TriggerSpeechService()
+    {
         if (!_inited)
         {
             Debug.Log($"Please init before start ASR");
             return;
-        }
-
-        if (useUI)
-        {
-            // Determine which hand controller triggered the mic for hand-specific UI interactions
-            var controllerInputDevice = context.control.device;
-            if (controllerInputDevice.usages.Contains(CommonUsages.LeftHand))
-            {
-                Debug.Log("ACTION TRIGGERED BY LEFT");
-                _isLeftController = true;
-            }
-            else
-            {
-                Debug.Log("ACTION TRIGGERED BY RIGHT");
-                _isLeftController = false;
-            }
         }
 
         // Triggers the appropriate speech service controls
@@ -215,7 +217,7 @@ public class VoiceManager : MonoBehaviour
         // Subscribes the appropriate event to the mic controls
         if (micAction != null)
         {
-            micAction.action.started += OnMicControlInput;
+            micAction.action.started += OnMicControllerInput;
             micAction.action.Enable();
         }
     }
@@ -225,7 +227,7 @@ public class VoiceManager : MonoBehaviour
         // Unsubcribes the appropriate event from the mic controls
         if (micAction != null)
         {
-            micAction.action.started -= OnMicControlInput;
+            micAction.action.started -= OnMicControllerInput;
             micAction.action.Disable();
         }       
     }

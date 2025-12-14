@@ -44,6 +44,6 @@ EditorBuildSettings:
   m_configObjects:
     Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: eae7a8c248df266438c1a1a7d5a9520a, type: 2}
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: 9801a56ed26d34dc0936cb367ad2a8a5, type: 2}
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 657b72366346b4f71b2cb69866aaf03a, type: 2}
   m_UseUCBPForAssetBundles: 0

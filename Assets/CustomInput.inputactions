@@ -1,0 +1,45 @@
+{
+    "name": "CustomInput",
+    "maps": [
+        {
+            "name": "XR Dual Interaction",
+            "id": "0cd6d330-604b-4898-b0a2-6a58e68acc0e",
+            "actions": [
+                {
+                    "name": "MicPress",
+                    "type": "Button",
+                    "id": "565b6e51-dc5b-4853-8167-6eb5dbfeff8b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "8305d0b1-5657-4cc2-a4bb-d93a1de18710",
+                    "path": "<XRSimulatedController>/gripButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MicPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79f94e45-5369-42f6-a89f-71d25daf4616",
+                    "path": "<PXR_Controller>/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MicPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
