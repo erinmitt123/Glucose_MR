@@ -26,7 +26,6 @@ public class ParseManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         if (voiceManager == null)
         {
