@@ -1013,6 +1013,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1998252731129185554, guid: c9eca42743b162d44a13afc1c6f274ab, type: 3}
+      propertyPath: m_PokeStrengthSnapThreshold
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3957459702082692598, guid: c9eca42743b162d44a13afc1c6f274ab, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

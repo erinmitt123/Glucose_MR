@@ -1913,7 +1913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_PokeInteractorObject: {fileID: 8976401236167035799}
-  m_PokeStrengthSnapThreshold: 0.01
+  m_PokeStrengthSnapThreshold: 1
   m_SmoothingAmount: 24
   m_FixedOffset: 0.005
 --- !u!4 &8660424158595944943 stripped
