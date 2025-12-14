@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &311622077 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3089171574421804273, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+  m_PrefabInstance: {fileID: 539232358}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f10d6d452c27464da8dfb7aa091c68c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &375801344
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,6 +246,100 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 300670049927342124, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
   m_PrefabInstance: {fileID: 539232358}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &606195934
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 606195935}
+  - component: {fileID: 606195937}
+  - component: {fileID: 606195936}
+  m_Layer: 0
+  m_Name: VoiceInputGesture_ThumbMiddlePinch_Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &606195935
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606195934}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1209206146}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &606195936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606195934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5b9cf54c47f40ee9c3eb30ea8eb89b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Handedness: 1
+  m_UpdateType: 1
+  m_PoseUpdated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_JointsUpdated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_TrackingAcquired:
+    m_PersistentCalls:
+      m_Calls: []
+  m_TrackingLost:
+    m_PersistentCalls:
+      m_Calls: []
+  m_TrackingChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &606195937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606195934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9380e870b3d09f41b664e73c5604c12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handTrackingEvents: {fileID: 606195936}
+  handShape: {fileID: 11400000, guid: 3945cc2ebd467484ba57845f982b24ca, type: 2}
+  handShapeCompletenessCalculator: {fileID: 1209206145}
+  gestureDetectionInterval: 0.1
+  minimumDetectionThreshold: 0.9
+  onGestureDetected:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 311622077}
+        m_TargetAssemblyTypeName: VoiceManager, Assembly-CSharp
+        m_MethodName: MicHandGestureInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &928811618
 GameObject:
   m_ObjectHideFlags: 0
@@ -458,6 +563,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1925617058}
+  - {fileID: 606195935}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1239210977
@@ -664,11 +770,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9380e870b3d09f41b664e73c5604c12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handTrackingEvents: {fileID: 0}
-  handShapes: []
-  handShapeCompletenessCalculator: {fileID: 0}
+  handTrackingEvents: {fileID: 1925617059}
+  handShape: {fileID: 11400000, guid: 3945cc2ebd467484ba57845f982b24ca, type: 2}
+  handShapeCompletenessCalculator: {fileID: 1209206145}
   gestureDetectionInterval: 0.1
   minimumDetectionThreshold: 0.9
+  onGestureDetected:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 311622077}
+        m_TargetAssemblyTypeName: VoiceManager, Assembly-CSharp
+        m_MethodName: MicHandGestureInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2072818739
 GameObject:
   m_ObjectHideFlags: 0

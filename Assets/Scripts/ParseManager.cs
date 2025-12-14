@@ -33,7 +33,7 @@ public class ParseManager : MonoBehaviour
             voiceManager = GetComponentInChildren<VoiceManager>();
             if (voiceManager == null)
             {
-                Debug.Log("Voice Manager does not exist or is not a child of Application Manager.");
+                Debug.Log("Voice Manager does not exist or is not a child of Parse Manager.");
             }
         }
     }
