@@ -175,6 +175,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hand Poke Interactor Affordances
       objectReference: {fileID: 0}
+    - target: {fileID: 3626493631032143715, guid: eed9e61964b17194d94ce56bffabb610, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3626493631032143718, guid: eed9e61964b17194d94ce56bffabb610, type: 3}
       propertyPath: m_InteractorSource
       value: 
@@ -1377,6 +1381,14 @@ PrefabInstance:
       propertyPath: m_Interactor
       value: 
       objectReference: {fileID: 1052584047}
+    - target: {fileID: 1538976526839647015, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+      propertyPath: m_AffordanceStateProvider
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545576279830946201, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+      propertyPath: m_AffordanceStateProvider
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3369527167708781622, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
       propertyPath: m_Name
       value: Pinch Point Stabilized
@@ -1453,7 +1465,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8232174397725000580, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+      propertyPath: m_AffordanceStateProvider
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362549039119506064, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9113310872675320958, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+      propertyPath: m_AffordanceStateProvider
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9205766622909133630, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+      propertyPath: m_AffordanceStateProvider
+      value: 
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3941121930630195656, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+    - {fileID: 9205766622909133630, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+    - {fileID: 1538976526839647015, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+    - {fileID: 9113310872675320958, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+    - {fileID: 1545576279830946201, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+    - {fileID: 5862434181995340926, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
+    - {fileID: 8232174397725000580, guid: 88b12c0ca81d9a34eac32a1e1bd19b1c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -2043,6 +2078,10 @@ PrefabInstance:
     - target: {fileID: 3535746112591574418, guid: 67c52e745f2766644ba16bfb165e2659, type: 3}
       propertyPath: m_Name
       value: Hand Near-Far Interactor Affordances
+      objectReference: {fileID: 0}
+    - target: {fileID: 3535746112591574418, guid: 67c52e745f2766644ba16bfb165e2659, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3535746112591574419, guid: 67c52e745f2766644ba16bfb165e2659, type: 3}
       propertyPath: m_RootOrder
@@ -6437,6 +6476,10 @@ PrefabInstance:
       value: '[Building Block] PICO Hand Tracking XR Origin (XR Rig)'
       objectReference: {fileID: 0}
     - target: {fileID: 1744551821735310866, guid: c9eca42743b162d44a13afc1c6f274ab, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7782617943810335362, guid: c9eca42743b162d44a13afc1c6f274ab, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
