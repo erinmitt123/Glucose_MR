@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PXR_ProjectSetting
   m_EditorClassIdentifier: 
   useContentProtect: 0
-  handTracking: 0
-  adaptiveHand: 0
+  handTracking: 1
+  adaptiveHand: 1
   highFrequencyHand: 0
   openMRC: 1
   faceTracking: 0
