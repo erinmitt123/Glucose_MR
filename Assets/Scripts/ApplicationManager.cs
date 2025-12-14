@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.XR.PXR;
+using System.Collections;
 
 public class ApplicationManager : MonoBehaviour
 {
@@ -7,4 +8,5 @@ public class ApplicationManager : MonoBehaviour
     {
         PXR_Manager.EnableVideoSeeThrough = true;
     }
+
 }
