@@ -1011,8 +1011,8 @@ GameObject:
   m_Component:
   - component: {fileID: 612784683}
   - component: {fileID: 612784686}
-  - component: {fileID: 612784685}
   - component: {fileID: 612784684}
+  - component: {fileID: 612784685}
   m_Layer: 0
   m_Name: Left Hand
   m_TagString: Untagged
@@ -1057,8 +1057,8 @@ MonoBehaviour:
   m_PokeGestureStarted:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5359434741994886739}
-        m_TargetAssemblyTypeName: UnityEngine.XR.Interaction.Toolkit.MultiCastInteractor.NearFarInteractor,
+      - m_Target: {fileID: 1052584047}
+        m_TargetAssemblyTypeName: UnityEngine.XR.Interaction.Toolkit.Interactors.NearFarInteractor,
           Unity.XR.Interaction.Toolkit
         m_MethodName: set_enableFarCasting
         m_Mode: 6
@@ -1073,8 +1073,8 @@ MonoBehaviour:
   m_PokeGestureEnded:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5359434741994886739}
-        m_TargetAssemblyTypeName: UnityEngine.XR.Interaction.Toolkit.MultiCastInteractor.NearFarInteractor,
+      - m_Target: {fileID: 1052584047}
+        m_TargetAssemblyTypeName: UnityEngine.XR.Interaction.Toolkit.Interactors.NearFarInteractor,
           Unity.XR.Interaction.Toolkit
         m_MethodName: set_enableFarCasting
         m_Mode: 6
@@ -1198,12 +1198,12 @@ MonoBehaviour:
   m_GroupName: 
   m_InteractionManager: {fileID: 0}
   m_StartingGroupMembers:
-  - {fileID: 6237049687586235588}
-  - {fileID: 5359434741994886739}
+  - {fileID: 1390865855}
+  - {fileID: 1052584047}
   m_StartingInteractionOverridesMap:
-  - groupMember: {fileID: 6237049687586235588}
+  - groupMember: {fileID: 1390865855}
     overrideGroupMembers:
-    - {fileID: 5359434741994886739}
+    - {fileID: 1052584047}
 --- !u!114 &639686448
 MonoBehaviour:
   m_ObjectHideFlags: 0
