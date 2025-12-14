@@ -21,8 +21,7 @@ public class VoiceManager : MonoBehaviour
     [SerializeField] private bool showPunctuation = true; 
 
     // How the Speech Service can be triggered by the user
-    [Header("Controller References")]
-    [SerializeField] private InputActionAsset inputActions;
+    [Header("Input Action References")]
     [SerializeField] private InputActionReference micAction;
 
     [Header("Optional UI")]

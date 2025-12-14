@@ -54,6 +54,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 300670049927342124}
     m_Modifications:
+    - target: {fileID: 1355961579621315588, guid: 61e29084083399e419514f0d6035dd9c, type: 3}
+      propertyPath: micAction
+      value: 
+      objectReference: {fileID: 1605972497963325933, guid: 5283c82f694576b4f9cbfeaf2e1b8315, type: 3}
+    - target: {fileID: 1355961579621315588, guid: 61e29084083399e419514f0d6035dd9c, type: 3}
+      propertyPath: inputActions
+      value: 
+      objectReference: {fileID: -944628639613478452, guid: 5283c82f694576b4f9cbfeaf2e1b8315, type: 3}
     - target: {fileID: 2420458326032306793, guid: 61e29084083399e419514f0d6035dd9c, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.005
