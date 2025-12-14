@@ -1,12 +1,14 @@
+using System.Xml.Serialization;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Inputs;
+using static UnityEngine.XR.Interaction.Toolkit.Inputs.XRInputModalityManager;
 
 [RequireComponent (typeof(SmoothBillboardFollow), typeof(AudioSource))]
 public class VoiceUI : MonoBehaviour
 {
-    [Header("Controller Reference Points")]
-    [Tooltip("The target transforms of the left and right controllers anchor points")]
-    [SerializeField] private Transform leftController;
-    [SerializeField] private Transform rightController;
+    [Header("XR Anchor Provider")]
+    [Tooltip("Typically attached to the XR Rig, containing references to the controllers and hands")]
+    [SerializeField] private XRAnchorProvider anchorProvider;
 
     [Header("Audio Clips")]
     [SerializeField] private AudioClip startSound;
@@ -27,7 +29,7 @@ public class VoiceUI : MonoBehaviour
         DeactivateVisuals();
     }
 
-    #region -----PUBLIC METHODS FOR CONTROLLER INPUT-----
+    #region -----PUBLIC METHODS FOR PLAYER INPUT-----
 
     /// <summary>
     /// Called when the user presses the input (e.g., the Grip button) on an XR Controller.
@@ -35,8 +37,12 @@ public class VoiceUI : MonoBehaviour
     /// <param name="controller">The Transform of the XR Controller that pressed the button.</param>
     public void Activate(bool isLeft)
     {
+        // Determines which controller transform to parent to, and exits if nothing is being tracked
+        Transform anchor = isLeft ? anchorProvider.Left : anchorProvider.Right;
+        if (!anchor) return;
+
         // Determines which controller transform to parent to
-        follow.targetController = isLeft ? leftController : rightController;
+        follow.targetController = anchor;
 
         ActivateSound();
         ActivateVisuals();
