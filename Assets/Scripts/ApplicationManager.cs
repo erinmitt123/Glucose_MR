@@ -15,6 +15,9 @@ public class ApplicationManager : MonoBehaviour
             return;
         }
         Instance = this;
+
+        // Unparents the game object so that it can be protected on load
+        gameObject.transform.parent = null;
         DontDestroyOnLoad(gameObject);
 
         // Enables seethrough mode to start mixed reality scene
