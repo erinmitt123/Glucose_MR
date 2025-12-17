@@ -256,7 +256,7 @@ namespace PicoXR.SecureMR.Demo
             gltfPlaceholder2 = rendererPipeline.CreateTensorReference<Gltf>();
             gltfPlaceholder3 = rendererPipeline.CreateTensorReference<Gltf>();
             gltfPlaceholder4 = rendererPipeline.CreateTensorReference<Gltf>();
-            textureIdPlaceholder = rendererPipeline.CreateTensorReference<Gltf>(); // TODO: here
+            //textureIdPlaceholder = rendererPipeline.CreateTensorReference<Gltf>(); // TODO: here
 
             predClassRead = rendererPipeline.CreateTensorReference<int, Scalar>(1, new TensorShape(new[] {1}));
             predScoreRead = rendererPipeline.CreateTensorReference<float, Scalar>(1, new TensorShape(new[] {1}));
@@ -352,7 +352,7 @@ namespace PicoXR.SecureMR.Demo
             tensorMapping.Set(gltfPlaceholder2, gltfTensor2);
             tensorMapping.Set(gltfPlaceholder3, gltfTensor3);
             tensorMapping.Set(gltfPlaceholder4, gltfTensor4);
-            tensorMapping.Set(textureIdPlaceholder, gltfTensor5);
+            //tensorMapping.Set(textureIdPlaceholder, gltfTensor5);
             tensorMapping.Set(predClassRead, predClassGlobal);
             tensorMapping.Set(predScoreRead, predScoreGlobal);
             tensorMapping.Set(cropRgbRead, cropRgbGlobal);
