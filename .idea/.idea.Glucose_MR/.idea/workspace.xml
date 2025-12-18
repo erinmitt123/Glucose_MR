@@ -3,12 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="1c992c3c-8a6a-4727-8915-2a30548f28c0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Glucose_MR/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Glucose_MR/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/PerformanceTestRunInfo.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/PerformanceTestRunInfo.json.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/PerformanceTestRunSettings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/PerformanceTestRunSettings.json.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/UFODemo.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/UFODemo.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MinimalApp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MinimalApp.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SecureMRSample.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SecureMRSample.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/UFODemoMod.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UFODemoMod.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +25,7 @@
     <setting file="file://$USER_HOME$/Downloads/PICO Unity Integration SDK-3.3.2-20251111/Runtime/Scripts/SecureMR/Core/PXR_SecureMROperatorCore.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/MnistFrame.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/ColorPicker.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Yolo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.picoxr@8a80917b64c1/Runtime/Scripts/PXR_Plugin.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.picoxr@8a80917b64c1/Runtime/Scripts/SecureMR/Core/PXR_SecureMROperatorCore.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.picoxr@8a80917b64c1/Runtime/Scripts/SecureMR/Core/PXR_SecureMRPipelineCore.cs" root0="SKIP_HIGHLIGHTING" />
@@ -110,7 +112,7 @@
       <option name="presentableId" value="Default" />
       <updated>1763312011309</updated>
       <workItem from="1763312013642" duration="3839000" />
-      <workItem from="1766000545123" duration="14320000" />
+      <workItem from="1766000545123" duration="42097000" />
     </task>
     <servers />
   </component>
