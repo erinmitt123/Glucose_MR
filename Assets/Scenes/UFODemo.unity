@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2272d729aa24bdb438ea03cfbb6f9dcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  faceModel: {fileID: 4900000, guid: da07377a4f1f4a340a7e7c1303e36c70, type: 3}
+  faceModel: {fileID: 4900000, guid: d6ab4943bafa338438359191bde32198, type: 3}
   ufoGltfAsset: {fileID: 4900000, guid: d68256c1ff32f47628aefa3b2e308d07, type: 3}
   anchorMatrixAsset: {fileID: 4900000, guid: dd722839d27f44bfb9109bca7a7e7d70, type: 3}
   numFramesToRun: -1

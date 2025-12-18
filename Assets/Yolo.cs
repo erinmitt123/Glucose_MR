@@ -34,8 +34,8 @@ namespace PicoXR.SecureMR.Demo
         public float intervalBetweenPipelineRuns = 0.033f;
         private int vstWidth = 640;
         private int vstHeight = 640;
-        private int yoloObjDimension = 25200;
-        private int resultsDimension = 1;
+        private int yoloObjDimension = 8400;
+        private int resultsDimension = 5;
 
         private Provider provider;
         private Pipeline vstPipeline;
@@ -246,7 +246,7 @@ namespace PicoXR.SecureMR.Demo
             
             // Create my own global tensors for text exchange
             //textGlobal = provider.CreateTensor<byte, Scalar>(1, new TensorShape(40), Encoding.UTF8.GetBytes("Placeholder"));
-            resultsGlobal = provider.CreateTensor<int, Matrix>(1, new TensorShape(new[] { resultsDimension, 1}), new []{13});
+            resultsGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 1, resultsDimension}), new []{13f});
 
             byte[] gltfBytes = ufoGltfAsset.bytes;
             gltfTensor = provider.CreateTensor<Gltf>(gltfBytes);
@@ -296,28 +296,39 @@ namespace PicoXR.SecureMR.Demo
             {
                 try
                 {
+                    
+                    //Debug.LogError("Started running the model inference pipeline...");
+                    Debug.LogWarning("Started creating the model inference pipeline...");
+
                     // Create pipeline placeholders for global tensors
                     vstImagePlaceholder = modelInferencePipeline.CreateTensorReference<float, Matrix>(3, new TensorShape(new[] { vstHeight, vstWidth }));
                     //leftEyeUVPlaceholder = modelInferencePipeline.CreateTensorReference<int, Point>(2, new TensorShape(new[] { 1 }));
-                    resultsWrite = modelInferencePipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[] { resultsDimension, 1}));
+                    resultsWrite = modelInferencePipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] { 1, resultsDimension}));
+                    
+                    
                     // 1. model inference
-                    var ufoAnchor = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] {  4, yoloObjDimension }));
+                    Debug.LogWarning("Model inference");
+                    var ufoAnchor = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 1, yoloObjDimension , 4}));
                     var ufoScores = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 1, yoloObjDimension}));
-                    var classIdx = modelInferencePipeline.CreateTensor<uint, Matrix>(1, new TensorShape(new[] { 1, yoloObjDimension}));
-
-                    // var modelConfig = new ModelOperatorConfiguration(ufoModel.bytes, SecureMRModelType.QnnContextBinary, "face");
+                    var classIdx = modelInferencePipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, yoloObjDimension}));
+                    
+                    Debug.LogWarning("Adding mapping to model...");
+                    //var modelConfig = new ModelOperatorConfiguration(ufoModel.bytes, SecureMRModelType.QnnContextBinary, "face");
                     modelConfig.AddInputMapping("image", "image", SecureMRModelEncoding.Float32);
                     modelConfig.AddOutputMapping("boxes", "boxes", SecureMRModelEncoding.Float32);
                     modelConfig.AddOutputMapping("scores", "scores", SecureMRModelEncoding.Float32);
                     modelConfig.AddOutputMapping("class_idx", "class_idx", SecureMRModelEncoding.UInt8);
+                    
                     
                     var modelOp = modelInferencePipeline.CreateOperator<RunModelInferenceOperator>(modelConfig);
                     modelOp.SetOperand("image", vstImagePlaceholder);
                     modelOp.SetResult("boxes", ufoAnchor);
                     modelOp.SetResult("scores", ufoScores);
                     modelOp.SetResult("class_idx", classIdx);
+                    Debug.LogWarning("Finished setting up the model!");
                     
                     
+
 /*
                     // 2. apply anchor
                     // var anchorBytes = anchorMatrixAsset.bytes;
@@ -365,7 +376,7 @@ namespace PicoXR.SecureMR.Demo
                     landmarksArithmeticOp.SetOperand("{1}", anchorMatDuplicated);
                     landmarksArithmeticOp.SetResult("result", ufoLandmarks);
 */
-/*
+
                     // 3. get best detection - argmax
                     var bestFaceIndex = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 1 }));
                     var bestFaceIndexMat = modelInferencePipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, 1 }));
@@ -387,7 +398,7 @@ namespace PicoXR.SecureMR.Demo
                         new ArithmeticComposeOperatorConfiguration("{0} + 1"));
                     arithmeticOp.SetOperand("{0}", bestFaceIndexMat);
                     arithmeticOp.SetResult("result", bestFaceIndexPlusOne);
-                    ****/
+                    
 /*
                     // Create slice tensors for best face
                     var srcSlicesBestFace = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), 
@@ -433,15 +444,16 @@ namespace PicoXR.SecureMR.Demo
                     //textWrite = modelInferencePipeline.CreateTensorReference<byte, Scalar>(1, new TensorShape(new []{40}));
                     //var text = Encoding.UTF8.GetBytes("This is Manuel!");
                     //textWrite.Reset(text); // not doing anything
-                   
-                    var localResults = renderPipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, 1 }), new int[]{69});
-                    //var textLocal = modelInferencePipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new []{40}), text);
+                    //var localResults = modelInferencePipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, 1 }), new int[]{69});
                     var assignmentOp = modelInferencePipeline.CreateOperator<AssignmentOperator>();
-                    //assignmentOp.SetOperand("src", ufoScores);
-                    //assignmentOp.SetOperand("src", bestFaceIndexPlusOne);
-                    assignmentOp.SetOperand("src", localResults);
+                    //assignmentOp.SetOperand("src", localResults);
+                    //assignmentOp.SetOperand("src", bestFaceIndexMat);
+                    assignmentOp.SetOperand("src", ufoScores);
+                    var resultsSliceTensor = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), new[] { 0, 1, 0, resultsDimension });
+                    assignmentOp.SetOperand("src slices", resultsSliceTensor);
                     assignmentOp.SetResult("dst", resultsWrite);
 
+                    Debug.LogWarning("Finished creating the model inference pipeline!");
                 }
                 catch (Exception e)
                 {
@@ -539,7 +551,7 @@ namespace PicoXR.SecureMR.Demo
                     currentPositionRead = renderPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
                     previousPositionRead = renderPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
                     //textRead = renderPipeline.CreateTensorReference<byte, Scalar>(1, new TensorShape(40));
-                    resultsRead = renderPipeline.CreateTensorReference<int, Matrix>(1, new TensorShape(new[] { resultsDimension, 1}));
+                    resultsRead = renderPipeline.CreateTensorReference<float, Matrix>(1, new TensorShape(new[] {1, resultsDimension}));
                     var interpolatedPosition = renderPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }));
 
                     // Create operators
@@ -567,7 +579,7 @@ namespace PicoXR.SecureMR.Demo
                     
                     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
                     // slice result float matrix of type  <float, Matrix>(1, new TensorShape(new[] { 896, 1}));
-                    //var localResults = renderPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 1 }), new float[]{1.1f, 2.2f, 3.3f, 4.4f});
+                    //var localResults = renderPipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 8400, 1 }), new float[]{8.1f, 2.2f, 3.3f, 4.4f});
                     //var localResults = renderPipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, 1 }), new int[]{355});
                     /*
                     var resultsSliceTensor = renderPipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), new[] { 0, 1, 0, 1 });
@@ -594,6 +606,8 @@ namespace PicoXR.SecureMR.Demo
                     
                     /////////////////////////////////////////////////////////////////////////////////////////////////////
                     ///
+                    Debug.LogWarning("Finished creating the rendering pipeline!");
+
                 }
                 catch (Exception e)
                 {
