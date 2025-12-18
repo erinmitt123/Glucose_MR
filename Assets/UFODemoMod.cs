@@ -226,9 +226,15 @@ namespace PicoXR.SecureMR.Demo
 
             // Create global tensors for position tracking
             currentPositionGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }),
-                    new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f});
+                    new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 
+                                       0.0f, 1.0f, 0.0f, 0.0f, 
+                                       0.0f, 0.0f, 1.0f, 0.0f, 
+                                       0.0f, 0.0f, 0.0f, 1.0f});
             previousPositionGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 4, 4 }),
-                    new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f});
+                    new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 
+                                       0.0f, 1.0f, 0.0f, 0.0f, 
+                                       0.0f, 0.0f, 1.0f, 0.0f, 
+                                       0.0f, 0.0f, 0.0f, 1.0f});
 
             byte[] gltfBytes = ufoGltfAsset.bytes;
             gltfTensor = provider.CreateTensor<Gltf>(gltfBytes);
@@ -302,7 +308,7 @@ namespace PicoXR.SecureMR.Demo
                     Buffer.BlockCopy(anchorBytes, 0, anchorFloats, 0, anchorBytes.Length);
                     var anchorMatTensor = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 4 }), anchorFloats);
                     var ufoLandmarks = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 896, 4 }));
-                
+                    
                     // Create slice tensors for landmarks
                     var srcSliceTensor = modelInferencePipeline.CreateTensor<int, Slice>(2, new TensorShape(new[] { 2 }), new[] { 0, 896, 4, 8 });
                     var anchorToSliceOp = modelInferencePipeline.CreateOperator<AssignmentOperator>();
@@ -402,6 +408,9 @@ namespace PicoXR.SecureMR.Demo
                     assignmentOpLeftEyeUV.SetOperand("src slices", srcSliceLeftEyeUV);
                     // assignmentOpLeftEyeUV.SetOperand("dst channel slice", dstChannelSliceLeftEyeUV);
                     assignmentOpLeftEyeUV.SetResult("dst", leftEyeUVPlaceholder);
+                    
+                    
+
                 }
                 catch (Exception e)
                 {
@@ -516,7 +525,7 @@ namespace PicoXR.SecureMR.Demo
                     // Create GLTF placeholder and position tensor references
                     gltfPlaceholder = renderPipeline.CreateTensorReference<Gltf>();
 
-                    
+                    /* TODO continue here
                     var renderTextOpConfig = new RenderTextConfiguration(FontTypeFace.Bold,"zh-cn",width,height);
                     var renderTextOp = renderPipeline.CreateOperator<RenderTextOperator>(renderTextOpConfig);
                     sortMatrixOp.SetOperand("text", textTensor);
@@ -525,7 +534,7 @@ namespace PicoXR.SecureMR.Demo
                     sortMatrixOp.SetOperand("colors", colorsTensor);
                     sortMatrixOp.SetOperand("texture ID", textureIDTensor);
                     sortMatrixOp.SetOperand("font size", fontSizeTensor);
-                    
+                    */
                     
                     // Create render GLTF operator
                     var renderGltfOperator = renderPipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
@@ -533,6 +542,20 @@ namespace PicoXR.SecureMR.Demo
                     renderGltfOperator.SetOperand("world pose", interpolatedPosition);
                     // renderGltfOperator.SetOperand("is visible", isUfoDetposeTensorectedRead);
                     
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    RenderTextOperatorConfiguration renderTextConfiguration = new RenderTextOperatorConfiguration(SecureMRFontTypeface.Default,"en-US",1440,960);
+                    var renderTextOp = modelInferencePipeline.CreateOperator<RenderTextOperator>(renderTextConfiguration);
+                    var textTensor = modelInferencePipeline.CreateTensor<byte,Scalar>(1, new TensorShape(30), Encoding.UTF8.GetBytes("Hello World"));
+                    renderTextOp.SetOperand("text", textTensor);
+                    var startPositionTensor = modelInferencePipeline.CreateTensor<float,Point>(2, new TensorShape(1),new float[] { 0.1f, 0.3f});
+                    renderTextOp.SetOperand("start", startPositionTensor);
+                    renderTextOp.SetOperand("gltf", gltfPlaceholder);
+                    var colorsTensor = modelInferencePipeline.CreateTensor<byte,Color>(4, new TensorShape(2), new byte[]{255, 0, 0, 255, 0, 0, 0, 255});
+                    renderTextOp.SetOperand("colors", colorsTensor);
+                    var textureIDTensor = modelInferencePipeline.CreateTensor<ushort,Scalar>(1, new TensorShape(1), new ushort[] { 0});
+                    renderTextOp.SetOperand("texture ID", textureIDTensor);
+                    var fontSizeTensor = modelInferencePipeline.CreateTensor<float,Scalar>(1, new TensorShape(1), new float[] { 144f });
+                    renderTextOp.SetOperand("font size", fontSizeTensor);
                     
                 }
                 catch (Exception e)

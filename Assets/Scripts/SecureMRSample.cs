@@ -68,9 +68,9 @@ namespace PicoXR.SecureMR.Demo
             int[] transformDim = { 4, 4 };
             var transformShape = new TensorShape(transformDim);
             float[] transformData = {
-                0.5f, 0.0f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f, 0.25f,
-                0.0f, 0.0f, 0.5f, -1.5f,
+                3f, 0.0f, 0.0f, -1f,
+                0.0f, 3, 0.0f, -0.2f,
+                0.0f, 0.0f, 3f, -0.1f,
                 0.0f, 0.0f, 0.0f, 1.0f
             };
             var poseTensor = pipeline.CreateTensor<float, Matrix>(1, transformShape, transformData);
@@ -90,13 +90,14 @@ namespace PicoXR.SecureMR.Demo
             var text = pipeline.CreateTensor<byte, Scalar>(1, new TensorShape(new[] { 30 }),
                 Encoding.UTF8.GetBytes("Hello World"));
             var startPosition = pipeline.CreateTensor<float, Point>(2, new TensorShape(new[] { 1 }),
-                new float[] { 0.1f, 0.3f });
+                new float[] { 0.1f, 0.1f });
             var colors = pipeline.CreateTensor<byte, Color>(4, new TensorShape(new[] { 2 }),
-                new byte[] { 255, 255, 255, 255, 0, 0, 0, 255 }); // white text, black background
+                //new byte[] { 255, 255, 255, 255, 0, 0, 0, 255 }); // white text, black background
+                new byte[] { 255, 0, 0, 255, 0, 0, 0, 255 }); // red text, black background
             var textureId = pipeline.CreateTensor<ushort, Scalar>(1, new TensorShape(new[] { 1 }),
                 new ushort[] { 0 });
             var fontSize = pipeline.CreateTensor<float, Scalar>(1, new TensorShape(new[] { 1 }),
-                new float[] { 144.0f });
+                new float[] { 100f });
             
             renderTextOp.SetOperand("text",text);
             renderTextOp.SetOperand("start",startPosition);

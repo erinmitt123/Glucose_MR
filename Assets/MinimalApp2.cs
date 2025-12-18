@@ -1,25 +1,13 @@
-// Copyright (2025) Bytedance Ltd. and/or its affiliates
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-using System;
+using System.Text;
 using Unity.XR.PXR;
 using Unity.XR.PXR.SecureMR;
 using UnityEngine;
+using Color = Unity.XR.PXR.SecureMR.Color;
 
 namespace PicoXR.SecureMR.Demo
 {
-    public class MinimalApp : MonoBehaviour
+
+    public class MinimalApp2 : MonoBehaviour
     {
         public TextAsset helmetGltfAsset;
         public int vstWidth = 1024;
@@ -29,6 +17,7 @@ namespace PicoXR.SecureMR.Demo
         private Pipeline pipeline;
         private Tensor gltfTensor;
         private Tensor gltfPlaceholderTensor;
+
         private void Awake()
         {
             PXR_Manager.EnableVideoSeeThrough = true;
@@ -65,7 +54,8 @@ namespace PicoXR.SecureMR.Demo
             // Create transform matrix tensor
             int[] transformDim = { 4, 4 };
             var transformShape = new TensorShape(transformDim);
-            float[] transformData = {
+            float[] transformData =
+            {
                 0.5f, 0.0f, 0.0f, 0.0f,
                 0.0f, 0.5f, 0.0f, -0.25f,
                 0.0f, 0.0f, 0.5f, -6.5f,
@@ -80,14 +70,38 @@ namespace PicoXR.SecureMR.Demo
             var renderGltfOperator = pipeline.CreateOperator<SwitchGltfRenderStatusOperator>();
             renderGltfOperator.SetOperand("gltf", gltfPlaceholderTensor);
             renderGltfOperator.SetOperand("world pose", poseTensor);
+            
+            RenderTextOperatorConfiguration renderTextConfiguration = new RenderTextOperatorConfiguration(SecureMRFontTypeface.SansSerif,"en-US",1440,960);
+            var renderTextOp = pipeline.CreateOperator<RenderTextOperator>(renderTextConfiguration);
+            //var textTensor = pipeline.CreateTensor<sbyte,Scalar>(1, new TensorShape(30));
+            var textTensor = pipeline.CreateTensor<byte,Scalar>(1, new TensorShape(30), Encoding.UTF8.GetBytes("Hello World"));
+            renderTextOp.SetOperand("text", textTensor);
+            //var startPositionTensor = pipeline.CreateTensor<float,Point>(2, new TensorShape(1));
+            var startPositionTensor = pipeline.CreateTensor<float,Point>(2, new TensorShape(1),new float[] { 0.1f, 0.3f});
+            renderTextOp.SetOperand("start", startPositionTensor);
+            renderTextOp.SetOperand("gltf", gltfPlaceholderTensor);
+            var colorsTensor = pipeline.CreateTensor<byte,Color>(4, new TensorShape(2), new byte[]{255, 255, 255, 255, 0, 0, 0, 255});
+            renderTextOp.SetOperand("colors", colorsTensor);
+            var textureIDTensor = pipeline.CreateTensor<ushort,Scalar>(1, new TensorShape(1), new ushort[] { 0});
+            renderTextOp.SetOperand("texture ID", textureIDTensor);
+            var fontSizeTensor = pipeline.CreateTensor<float,Scalar>(1, new TensorShape(1), new float[] { 144f });
+            renderTextOp.SetOperand("font size", fontSizeTensor);
+            
+            
+            //textTensor.Reset(Encoding.UTF8.GetBytes("Hello World"));
+            //startPositionTensor.Reset(new float[] { 0.1f, 0.3f});
+            //colorsTensor.Reset(new byte[]{255, 255, 255, 255, 0, 0, 0, 255});
+            //textureIDTensor.Reset(new ushort[] { 0});
+            //fontSizeTensor.Reset(new float[] { 144f });
+            
         }
-        
+
         private void RunPipeline()
         {
             Debug.Log("Running pipeline...");
 
             var tensorMapping = new TensorMapping();
-          
+
             tensorMapping.Set(gltfPlaceholderTensor, gltfTensor);
 
             pipeline.Execute(tensorMapping);

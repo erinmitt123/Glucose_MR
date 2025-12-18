@@ -2,10 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1c992c3c-8a6a-4727-8915-2a30548f28c0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Glucose_MR/.idea/indexLayout.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/MnistFrame.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MnistFrame.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Glucose_MR/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Glucose_MR/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/UFODemo.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/UFODemo.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MinimalApp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MinimalApp.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SecureMRSample.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SecureMRSample.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/UFODemoMod.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UFODemoMod.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,27 +24,29 @@
     <setting file="file://$USER_HOME$/Downloads/PICO Unity Integration SDK-3.3.2-20251111/Runtime/Scripts/SecureMR/Core/PXR_SecureMROperatorCore.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/MnistFrame.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/ColorPicker.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.picoxr@8a80917b64c1/Runtime/Scripts/PXR_Plugin.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.picoxr@8a80917b64c1/Runtime/Scripts/SecureMR/Core/PXR_SecureMROperatorCore.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.picoxr@8a80917b64c1/Runtime/Scripts/SecureMR/Core/PXR_SecureMRPipelineCore.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="35ZKANJuxOPGUZLHU8MVIF0Xk3T" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Attach to Unity Player.AndroidPlayer(Pico A9210).executor": "Debug",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "ObjectDetection2",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Attach to Unity Player.AndroidPlayer(Pico A9210).executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ObjectDetection2&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Player.AndroidPlayer(Pico A9210)">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.0.39f1\Editor\Unity.exe" />
@@ -106,6 +110,7 @@
       <option name="presentableId" value="Default" />
       <updated>1763312011309</updated>
       <workItem from="1763312013642" duration="3839000" />
+      <workItem from="1766000545123" duration="14320000" />
     </task>
     <servers />
   </component>
