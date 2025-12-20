@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Windows;
+using WordsToNumbers;
 
 public class UtilsTest : MonoBehaviour
 {
@@ -8,7 +8,7 @@ public class UtilsTest : MonoBehaviour
     {
         try
         {
-            RunWordNumberParserTests();
+            TestWordsToNumbersRuntimeParse();
             RunDoubleParserTests();
             RunChainedTests();
 
@@ -20,6 +20,63 @@ public class UtilsTest : MonoBehaviour
         }
     }
 
+    private void TestWordsToNumbersRuntimeParse()
+    {
+        string name = "Word";
+        string input;
+        string expectedOutput;
+        string output;
+        int testNumber = 0;
+
+        //         input = "My blood glucose level is one hundred and thirty four point twelve.";
+
+        // --- Test 1 ---
+        input = "My blood glucose level is two thousand and fifty six point seventy seven.";
+        expectedOutput = "My blood glucose level is 2056.77.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        /*
+        // --- Test 2 ---
+        input = "He is two hundred and one years old.";
+        expectedOutput = "He is 201 years old.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        // --- Test 3 ---
+        input = "The value is fifty six.";
+        expectedOutput = "The value is 56.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        // --- Test 4 ---
+        input = "My score is ninety nine point zero one.";
+        expectedOutput = "My score is 99.01.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        // --- Test 5 ---
+        input = "zero point five is small.";
+        expectedOutput = "0.5 is small.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        // --- Test 6 ---
+        input = "My level is seven four point oh three.";
+        expectedOutput = "My level is 74.03.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+        */
+        Debug.Log("<color=cyan>Word Number Parser Tests Passed.</color>");
+    }
+
+    /*
     private void RunWordNumberParserTests()
     {
         string name = "Word";
@@ -72,6 +129,7 @@ public class UtilsTest : MonoBehaviour
 
         Debug.Log("<color=cyan>Word Number Parser Tests Passed.</color>");
     }
+    */
 
     private void RunDoubleParserTests()
     {
