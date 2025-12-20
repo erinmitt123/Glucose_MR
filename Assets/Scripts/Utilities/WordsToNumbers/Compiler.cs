@@ -65,8 +65,11 @@ namespace WordsToNumbers
             {
                 double value = 0;
                 foreach (var token in sub.Tokens)
+                {
                     value += Constants.NUMBER[token.Lower];
-
+                    Debug.Log($"DECIMALS: The token is {token.Lower}");
+                }
+                Debug.Log($"DECIMALS: The final val is {value}");
                 int digits = value < 10 ? 1 : (int)Math.Floor(Math.Log10(value) + 1);
                 for (int i = 0; i < digits; i++) scale /= 10.0;
 
@@ -117,7 +120,6 @@ namespace WordsToNumbers
                     Debug.Log($"The calculated value in the loop is {value * multiplier + afterSum}");
                     processedTokens.Add(value * multiplier + afterSum);
                 }
-                // Functionally the same as if checking toke.Type != TokeType.Decimal, but left here for code clarity and extensibility
                 else
                 {
                     if (i > 0 && tokens[i - 1].Type == TokenType.Hundred) continue;
