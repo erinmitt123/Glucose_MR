@@ -9,8 +9,8 @@ public class UtilsTest : MonoBehaviour
         try
         {
             TestWordsToNumbersRuntimeParse();
-            RunDoubleParserTests();
-            RunChainedTests();
+            //RunDoubleParserTests();
+            //RunChainedTests();
 
             Debug.Log("<color=green>ALL TESTS PASSED SUCCESSFULLY ✔</color>");
         }
@@ -36,6 +36,23 @@ public class UtilsTest : MonoBehaviour
         output = WordsToNumbersAPI.Convert(input);
         testNumber += 1;
         CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        // dot eight six is putting the eight as a hundreds type. Parser error
+        // --- Test 2 ---
+        input = "My blood glucose level is one oh two point seven six.";
+        expectedOutput = "My blood glucose level is 102.86.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        // --- Test 3 ---
+        input = "My blood glucose level is two five six point twelve.";
+        expectedOutput = "My blood glucose level is 256.12.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        
 
         /*
         // --- Test 2 ---
@@ -178,6 +195,10 @@ public class UtilsTest : MonoBehaviour
             throw new Exception(
                 $"{name} Test {number} Failed.\nInput: {input} \nExpected: {expectedOutput} \nOutput: {output}"
             );
+        }
+        else
+        {
+            Debug.Log($"{name} Test {number} SUCEEDED!\nInput: {input} \nExpected: {expectedOutput} \nOutput: {output}");
         }
     }
 

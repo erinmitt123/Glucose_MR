@@ -22,7 +22,7 @@ namespace WordsToNumbers
 
         public static readonly Dictionary<string, double> UNIT = new()
         {
-            {"zero",0},{"first",1},{"one",1},{"second",2},{"two",2},{"third",3},{"three",3},
+            {"oh", 0 },{"zero",0},{"first",1},{"one",1},{"second",2},{"two",2},{"third",3},{"three",3},
             {"fourth",4},{"four",4},{"fifth",5},{"five",5},{"sixth",6},{"six",6},
             {"seventh",7},{"seven",7},{"eighth",8},{"eight",8},{"ninth",9},{"nine",9},
             {"tenth",10},{"ten",10},{"eleventh",11},{"eleven",11},{"twelfth",12},{"twelve",12},
