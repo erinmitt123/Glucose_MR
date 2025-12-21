@@ -50,6 +50,18 @@ Because of **SecureMR**, all camera processing happens locally, ensuring complet
 
 ![Banana Nutrition](https://raw.githubusercontent.com/erinmitt123/Glucose_MR/c96a3421def9a5cd7d26e429465f777858789faf/image-assets/banana-nutrition.gif)
 
+## Installation
+
+### Method 1: APK Release
+1. Download the latest .apk from Releases
+2. Add the apk to your Pico headset
+
+### Method 2: Manual Installation
+1. Download or clone this repository
+2. Using Unity Hub, add a new project from disk and navigate to where you cloned the repository
+3. (Optional) Copy the contents to your own Unity project if you want to build on an existing project
+4. Open the Main Scene, and build the project into an apk for your headset
+
 ### Repository Structure
 This repository contains:
 * **Main Glucose MR application** in the root directory
