@@ -248,17 +248,17 @@ namespace WordsToNumbers
 
         private static int ComputeSubRegionsValue(List<SubRegion> subRegions, bool canDigitByDigit)
         {
-            // Detect if we have multiple single-token Unit subRegions (e.g., "one oh two")
-            // These should be concatenated digit-by-digit: 1-0-2 = 102
-            bool hasMultipleSingleUnits = canDigitByDigit &&
+            // Detect if we have multiple single-token subRegions (e.g., "one oh two", "one twenty")
+            // These should be concatenated digit-by-digit: 1-0-2 = 102, 1-20 = 120
+            bool hasMultipleSingleTokens = canDigitByDigit &&
                 subRegions.Count >= 2 &&
-                subRegions.All(sr => sr.Tokens.Count == 1 && sr.Tokens[0].Type == TokenType.Unit);
+                subRegions.All(sr => sr.Tokens.Count == 1);
 
             int value = 0;
 
             foreach (var sub in subRegions)
             {
-                bool useDigit = hasMultipleSingleUnits || ShouldUseDigitByDigit(sub, canDigitByDigit);
+                bool useDigit = hasMultipleSingleTokens || ShouldUseDigitByDigit(sub, canDigitByDigit);
 
                 int subValue = useDigit ? ComputeSubRegionValueDigitByDigit(sub) : ComputeSubRegionValueNormal(sub);
 
