@@ -161,7 +161,7 @@ namespace WordsToNumbers
             {
                 var token = region.Tokens[i];
 
-                var (action, type, isHundred) = CheckIfTokenFitsSubRegion(currSub, token, impliedHundreds);
+                var (action, type, isHundred) = CheckIfTokenFitsSubRegion(currSub, token, impliedHundreds, region, i);
                 token.Type = isHundred ? TokenType.Hundred : token.Type;
 
                 switch (action)
@@ -188,32 +188,46 @@ namespace WordsToNumbers
             return subs;
         }
 
-        private static (Action action, TokenType type, bool isHundred) CheckIfTokenFitsSubRegion(SubRegion subRegion, Token token, bool impliedHundreds)
+        private static (Action action, TokenType type, bool isHundred) CheckIfTokenFitsSubRegion(SubRegion subRegion, Token token, bool impliedHundreds, Region region, int tokenIndex)
         {
-            var (type, isHundred) = GetSubRegionType(subRegion, token);
+            var (type, isHundred) = GetSubRegionType(subRegion, token, region, tokenIndex);
 
-            return subRegion != null && CanAddTokenToEndOfSubRegion(subRegion, token, impliedHundreds) 
+            return subRegion != null && CanAddTokenToEndOfSubRegion(subRegion, token, impliedHundreds)
                     ? (Action.ADD, type, isHundred)
                     : (Action.START_NEW_REGION, type, isHundred);
         }
 
-        private static (TokenType type, bool isHundred) GetSubRegionType(SubRegion subRegion, Token curr)
+        private static (TokenType type, bool isHundred) GetSubRegionType(SubRegion subRegion, Token curr, Region region, int tokenIndex)
         {
             if (subRegion == null)
                 return (curr.Type.Value, false);
 
             var prev = subRegion.Tokens[0];
 
+            // Check if any previous token is a decimal (covers "point zero one" case)
+            bool isAfterDecimal = false;
+            for (int j = 0; j < tokenIndex; j++)
+            {
+                if (region.Tokens[j].Type == TokenType.Decimal)
+                {
+                    isAfterDecimal = true;
+                    break;
+                }
+            }
+
             bool isHundred =
-                (prev.Type == TokenType.Ten && (curr.Type == TokenType.Unit || curr.Type == TokenType.Ten)) ||
+                !isAfterDecimal &&  // Exclude tokens after decimal point
                 (
-                    prev.Type == TokenType.Unit && (curr.Type == TokenType.Unit || 
-                        (
-                            curr.Type == TokenType.Ten 
-                            && Constants.UNIT[prev.Lower] > 9
-                        ))
-                ) 
-                || (subRegion.Type == TokenType.Magnitude && prev.Type == TokenType.Ten && curr.Type == TokenType.Unit);
+                    (prev.Type == TokenType.Ten && (curr.Type == TokenType.Unit || curr.Type == TokenType.Ten)) ||
+                    (
+                        prev.Type == TokenType.Unit && (curr.Type == TokenType.Unit ||
+                            (
+                                curr.Type == TokenType.Ten
+                                && Constants.UNIT[prev.Lower] > 9
+                            ))
+                    )
+                    || (subRegion.Type == TokenType.Magnitude && prev.Type == TokenType.Ten && curr.Type == TokenType.Unit)
+                );
 
             if (subRegion.Type == TokenType.Magnitude)
                 return (TokenType.Magnitude, isHundred);

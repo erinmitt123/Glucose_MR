@@ -10,7 +10,7 @@ namespace WordsToNumbers
     internal static class Compiler
     {
         /// <summary>
-        /// Converts a text and its numeric regions into either a number (if single region) 
+        /// Converts a text and its numeric regions into either a number (if single region)
         /// or replaces numeric regions in the text with their numeric values.
         /// </summary>
         public static string Compile(string text, List<Region> regions, bool canDigitByDigit)
@@ -18,12 +18,73 @@ namespace WordsToNumbers
             if (regions == null || regions.Count == 0)
                 return text;
 
+            // Combine adjacent regions if permission granted
+            if (canDigitByDigit)
+                regions = CombineAdjacentRegions(text, regions);
+
             // Single region spans entire text: return just the number
             if (regions.Count == 1 && regions[0].Start == 0 && regions[0].End == text.Length - 1)
                 return GetNumberWithDecimalPlaces(regions[0], canDigitByDigit);
 
             // Otherwise, replace numeric regions in text
             return ReplaceRegionsInText(text, regions, canDigitByDigit);
+        }
+
+        /// <summary>
+        /// Combines adjacent regions that are only separated by whitespace.
+        /// This allows "one oh two" to become 102 instead of "1 0 2".
+        /// </summary>
+        private static List<Region> CombineAdjacentRegions(string text, List<Region> regions)
+        {
+            if (regions.Count <= 1)
+                return regions;
+
+            var combined = new List<Region>();
+            Region current = null;
+
+            for (int i = 0; i < regions.Count; i++)
+            {
+                var region = regions[i];
+
+                if (current == null)
+                {
+                    current = region;
+                    continue;
+                }
+
+                // Check if regions are adjacent (only whitespace between them)
+                int gapStart = current.End + 1;
+                int gapEnd = region.Start - 1;
+                bool onlyWhitespaceBetween = true;
+
+                if (gapStart <= gapEnd)
+                {
+                    string gap = text.Substring(gapStart, gapEnd - gapStart + 1);
+                    onlyWhitespaceBetween = gap.Trim().Length == 0;
+                }
+
+                if (onlyWhitespaceBetween && gapStart <= gapEnd + 1)
+                {
+                    // Merge regions
+                    current.End = region.End;
+                    current.Tokens.AddRange(region.Tokens);
+                    current.SubRegions.AddRange(region.SubRegions);
+                    if (region.HasDecimal)
+                        current.HasDecimal = true;
+                }
+                else
+                {
+                    // Not adjacent, save current and start new
+                    combined.Add(current);
+                    current = region;
+                }
+            }
+
+            // Add the last region
+            if (current != null)
+                combined.Add(current);
+
+            return combined;
         }
 
         private static string GetNumberWithDecimalPlaces(Region region, bool canDigitByDigit)
@@ -34,24 +95,40 @@ namespace WordsToNumbers
                 : number.val.ToString();
         }
 
-        private static bool ShouldUseDigitByDigit(SubRegion subRegion)
+        private static bool ShouldUseDigitByDigit(SubRegion subRegion, bool canDigitByDigit)
         {
-            if (subRegion.Tokens.Any(t => t.Type == TokenType.Hundred || t.Type == TokenType.Magnitude)) 
-                return false;
-            // If there's a TEN token, this is semantic (eighty six, seventy)
-            if (subRegion.Tokens.Any(t => t.Type == TokenType.Ten))
+            // If permission denied, never use digit-by-digit
+            if (!canDigitByDigit)
                 return false;
 
+            // Always use semantic if magnitude present (thousand, million, etc.)
+            if (subRegion.Tokens.Any(t => t.Type == TokenType.Magnitude))
+                return false;
+
+            // Always use semantic if marked as Hundred type
+            if (subRegion.Tokens.Any(t => t.Type == TokenType.Hundred))
+                return false;
+
+            // Detect semantic pattern: Ten followed by Unit (e.g., "eighty five")
+            if (HasSemanticTenPlusUnitPattern(subRegion))
+                return false;
+
+            // If we have 2+ tokens and permission, use digit-by-digit
             return subRegion.Tokens.Count >= 2;
-            //// Count units / tens
-            //int unitCount = subRegion.Tokens.Count(t => t.Type == TokenType.Unit);
-            //int tenCount = subRegion.Tokens.Count(t => t.Type == TokenType.Ten);
+        }
 
-            //// two units in a row → "eight five" OR unit + ten without magnitude → "one twelve"
-            //if (unitCount >= 2 || (unitCount == 1 && tenCount == 1))
-            //    return true;
-
-            //return false;
+        private static bool HasSemanticTenPlusUnitPattern(SubRegion subRegion)
+        {
+            // Check for Ten + Unit pattern (semantic combination)
+            for (int i = 0; i < subRegion.Tokens.Count - 1; i++)
+            {
+                if (subRegion.Tokens[i].Type == TokenType.Ten &&
+                    subRegion.Tokens[i + 1].Type == TokenType.Unit)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
 
@@ -84,7 +161,25 @@ namespace WordsToNumbers
                 return (integerValue, 0);
 
             int fractionalValue = ComputeSubRegionsValue(fractionalSubs, true);
-            int fractionalDigits = NumUtils.DigitCount(fractionalValue);
+
+            // Count leading zeros that would be lost in the numeric value
+            int leadingZeros = 0;
+            bool foundNonZero = false;
+            foreach (var sub in fractionalSubs)
+            {
+                foreach (var token in sub.Tokens)
+                {
+                    if (Constants.NUMBER.TryGetValue(token.Lower, out var val))
+                    {
+                        if (!foundNonZero && val == 0)
+                            leadingZeros++;
+                        else
+                            foundNonZero = true;
+                    }
+                }
+            }
+
+            int fractionalDigits = NumUtils.DigitCount(fractionalValue) + leadingZeros;
 
             double finalValue = integerValue + (fractionalValue / (double)NumUtils.Pow10(fractionalDigits));
             return (finalValue, fractionalDigits);
@@ -153,11 +248,17 @@ namespace WordsToNumbers
 
         private static int ComputeSubRegionsValue(List<SubRegion> subRegions, bool canDigitByDigit)
         {
+            // Detect if we have multiple single-token Unit subRegions (e.g., "one oh two")
+            // These should be concatenated digit-by-digit: 1-0-2 = 102
+            bool hasMultipleSingleUnits = canDigitByDigit &&
+                subRegions.Count >= 2 &&
+                subRegions.All(sr => sr.Tokens.Count == 1 && sr.Tokens[0].Type == TokenType.Unit);
+
             int value = 0;
 
             foreach (var sub in subRegions)
             {
-                bool useDigit = canDigitByDigit && ShouldUseDigitByDigit(sub);
+                bool useDigit = hasMultipleSingleUnits || ShouldUseDigitByDigit(sub, canDigitByDigit);
 
                 int subValue = useDigit ? ComputeSubRegionValueDigitByDigit(sub) : ComputeSubRegionValueNormal(sub);
 
