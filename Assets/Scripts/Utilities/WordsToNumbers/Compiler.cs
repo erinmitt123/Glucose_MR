@@ -254,20 +254,24 @@ namespace WordsToNumbers
                 subRegions.Count >= 2 &&
                 subRegions.All(sr => sr.Tokens.Count == 1);
 
-            // Check if multiple single tokens contain a semantic Ten+Unit pattern across subregions
-            // e.g., "seventy seven" should be 77 (semantic), not 707 (digit-by-digit)
+            // Check if multiple single tokens form a complete semantic Ten+Unit pattern
+            // Only use semantic if ALL consecutive pairs are Ten+Unit (e.g., "seventy seven")
+            // Mixed patterns like "three forty five" should use digit-by-digit
             bool hasSemanticTenPlusUnitAcrossSubRegions = false;
-            if (hasMultipleSingleTokens)
+            if (hasMultipleSingleTokens && subRegions.Count >= 2)
             {
+                bool allPairsAreTenPlusUnit = true;
                 for (int i = 0; i < subRegions.Count - 1; i++)
                 {
-                    if (subRegions[i].Tokens[0].Type == TokenType.Ten &&
-                        subRegions[i + 1].Tokens[0].Type == TokenType.Unit)
+                    bool isTenPlusUnit = subRegions[i].Tokens[0].Type == TokenType.Ten
+                        && subRegions[i + 1].Tokens[0].Type == TokenType.Unit;
+                    if (!isTenPlusUnit)
                     {
-                        hasSemanticTenPlusUnitAcrossSubRegions = true;
+                        allPairsAreTenPlusUnit = false;
                         break;
                     }
                 }
+                hasSemanticTenPlusUnitAcrossSubRegions = allPairsAreTenPlusUnit;
             }
 
             // Check for mixed pattern: single-token Units + multi-token semantic subregions
@@ -288,22 +292,60 @@ namespace WordsToNumbers
 
             int value = 0;
 
-            foreach (var sub in subRegions)
+            // Special handling: in digit-by-digit mode with single tokens, merge Ten+Unit pairs first
+            // e.g., "three forty five" → [3] [40+5] → 3-45 = 345
+            if (useDigitByDigitCombination && hasMultipleSingleTokens)
             {
-                // Determine how to compile this individual subregion
-                bool useDigitForCompilation = ShouldUseDigitByDigit(sub, canDigitByDigit);
-
-                int subValue = useDigitForCompilation ? ComputeSubRegionValueDigitByDigit(sub) : ComputeSubRegionValueNormal(sub);
-
-                // Combine using concatenation or addition based on overall pattern
-                if (useDigitByDigitCombination)
+                int i = 0;
+                while (i < subRegions.Count)
                 {
+                    var sub = subRegions[i];
+                    int subValue;
+
+                    // Check if this subregion is a Ten followed by a Unit (semantic pair)
+                    if (i < subRegions.Count - 1 &&
+                        sub.Tokens[0].Type == TokenType.Ten &&
+                        subRegions[i + 1].Tokens[0].Type == TokenType.Unit)
+                    {
+                        // Combine Ten+Unit pair semantically
+                        int tenValue = (int)Constants.NUMBER[sub.Tokens[0].Lower];
+                        int unitValue = (int)Constants.NUMBER[subRegions[i + 1].Tokens[0].Lower];
+                        subValue = tenValue + unitValue;
+                        i += 2; // Skip next subregion
+                    }
+                    else
+                    {
+                        // Single subregion value
+                        bool useDigitForCompilation = ShouldUseDigitByDigit(sub, canDigitByDigit);
+                        subValue = useDigitForCompilation ? ComputeSubRegionValueDigitByDigit(sub) : ComputeSubRegionValueNormal(sub);
+                        i++;
+                    }
+
+                    // Concatenate
                     int digits = NumUtils.DigitCount(subValue);
                     value = value * NumUtils.Pow10(digits) + subValue;
                 }
-                else
+            }
+            else
+            {
+                // Normal handling for other patterns
+                foreach (var sub in subRegions)
                 {
-                    value += subValue;
+                    // Determine how to compile this individual subregion
+                    bool useDigitForCompilation = ShouldUseDigitByDigit(sub, canDigitByDigit);
+
+                    int subValue = useDigitForCompilation ? ComputeSubRegionValueDigitByDigit(sub) : ComputeSubRegionValueNormal(sub);
+
+                    // Combine using concatenation or addition based on overall pattern
+                    if (useDigitByDigitCombination)
+                    {
+                        int digits = NumUtils.DigitCount(subValue);
+                        value = value * NumUtils.Pow10(digits) + subValue;
+                    }
+                    else
+                    {
+                        value += subValue;
+                    }
                 }
             }
 

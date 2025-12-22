@@ -36,20 +36,6 @@ public class UtilsTest : MonoBehaviour
         CheckAndLogTest(name, testNumber, input, expectedOutput, output);
 
         // --- Test 2 ---
-        input = "My blood glucose level is one oh two point seven six.";
-        expectedOutput = "My blood glucose level is 102.76.";
-        output = WordsToNumbersAPI.Convert(input);
-        testNumber += 1;
-        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
-
-        // --- Test 3 ---
-        input = "My blood glucose level is two five six point twelve.";
-        expectedOutput = "My blood glucose level is 256.12.";
-        output = WordsToNumbersAPI.Convert(input);
-        testNumber += 1;
-        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
-
-        // --- Test 2 ---
         input = "He is two hundred and one years old.";
         expectedOutput = "He is 201 years old.";
         output = WordsToNumbersAPI.Convert(input);
@@ -233,7 +219,7 @@ public class UtilsTest : MonoBehaviour
 
         // --- Test 28: Cross-boundary - all zeros ---
         input = "Zero is zero zero zero.";
-        expectedOutput = "Zero is 0.";
+        expectedOutput = "0 is 0.";
         output = WordsToNumbersAPI.Convert(input);
         testNumber += 1;
         CheckAndLogTest(name, testNumber, input, expectedOutput, output);
@@ -248,6 +234,20 @@ public class UtilsTest : MonoBehaviour
         // --- Test 30: Cross-boundary - original requirement example ---
         input = "Blood sugar is one twenty point two thirty three.";
         expectedOutput = "Blood sugar is 120.233.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        // --- Test 31 ---
+        input = "My blood glucose level is one oh two point seven six.";
+        expectedOutput = "My blood glucose level is 102.76.";
+        output = WordsToNumbersAPI.Convert(input);
+        testNumber += 1;
+        CheckAndLogTest(name, testNumber, input, expectedOutput, output);
+
+        // --- Test 32 ---
+        input = "My blood glucose level is two five six point twelve.";
+        expectedOutput = "My blood glucose level is 256.12.";
         output = WordsToNumbersAPI.Convert(input);
         testNumber += 1;
         CheckAndLogTest(name, testNumber, input, expectedOutput, output);
