@@ -14,7 +14,7 @@ public class FoodInfo : MonoBehaviour
      */
     public static FoodInfo Instance { get; private set; }
 
-    public UIControllerScript other; 
+    public UIControllerScript uiController; 
 
     [Header("Runtime Calculations")]
     public double glucoseVal;
@@ -96,7 +96,7 @@ public class FoodInfo : MonoBehaviour
     //updates display with food values and grades
     public void UpdateValuesAndDisplay()
     {
-        isTypeOne = other.isTypeOne;
+        isTypeOne = uiController.isTypeOne;
 
         glucoseVal = ParseManager.Instance.glucoseLevel;
         secureMLValues = CsvToDoubleArray.Instance.nutritionDataArray[ParseManager.Instance.identifiedObjectIndex];
