@@ -254,15 +254,49 @@ namespace WordsToNumbers
                 subRegions.Count >= 2 &&
                 subRegions.All(sr => sr.Tokens.Count == 1);
 
+            // Check if multiple single tokens contain a semantic Ten+Unit pattern across subregions
+            // e.g., "seventy seven" should be 77 (semantic), not 707 (digit-by-digit)
+            bool hasSemanticTenPlusUnitAcrossSubRegions = false;
+            if (hasMultipleSingleTokens)
+            {
+                for (int i = 0; i < subRegions.Count - 1; i++)
+                {
+                    if (subRegions[i].Tokens[0].Type == TokenType.Ten &&
+                        subRegions[i + 1].Tokens[0].Type == TokenType.Unit)
+                    {
+                        hasSemanticTenPlusUnitAcrossSubRegions = true;
+                        break;
+                    }
+                }
+            }
+
+            // Check for mixed pattern: single-token Units + multi-token semantic subregions
+            // e.g., "three forty five" → [Unit:3], [Ten+Unit:40,5] should concatenate as 3-45=345
+            bool hasMixedDigitByDigitPattern = false;
+            if (canDigitByDigit && subRegions.Count >= 2 && !hasMultipleSingleTokens)
+            {
+                bool hasSingleTokenUnit = subRegions.Any(sr => sr.Tokens.Count == 1 && sr.Tokens[0].Type == TokenType.Unit);
+                bool hasMultiTokenNoMagnitude = subRegions.Any(sr =>
+                    sr.Tokens.Count > 1 &&
+                    !sr.Tokens.Any(t => t.Type == TokenType.Magnitude));
+
+                hasMixedDigitByDigitPattern = hasSingleTokenUnit && hasMultiTokenNoMagnitude;
+            }
+
+            // Determine if we should use concatenation (vs addition) when combining subregion values
+            bool useDigitByDigitCombination = (hasMultipleSingleTokens && !hasSemanticTenPlusUnitAcrossSubRegions) || hasMixedDigitByDigitPattern;
+
             int value = 0;
 
             foreach (var sub in subRegions)
             {
-                bool useDigit = hasMultipleSingleTokens || ShouldUseDigitByDigit(sub, canDigitByDigit);
+                // Determine how to compile this individual subregion
+                bool useDigitForCompilation = ShouldUseDigitByDigit(sub, canDigitByDigit);
 
-                int subValue = useDigit ? ComputeSubRegionValueDigitByDigit(sub) : ComputeSubRegionValueNormal(sub);
+                int subValue = useDigitForCompilation ? ComputeSubRegionValueDigitByDigit(sub) : ComputeSubRegionValueNormal(sub);
 
-                if (useDigit)
+                // Combine using concatenation or addition based on overall pattern
+                if (useDigitByDigitCombination)
                 {
                     int digits = NumUtils.DigitCount(subValue);
                     value = value * NumUtils.Pow10(digits) + subValue;
