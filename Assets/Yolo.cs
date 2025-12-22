@@ -228,7 +228,7 @@ namespace PicoXR.SecureMR.Demo
             vstCameraMatrixGlobal = provider.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 3, 3 }));
 
             // Create global tensors for UFO detection
-            modelConfig = new ModelOperatorConfiguration(faceModel.bytes, SecureMRModelType.QnnContextBinary, "face");
+            modelConfig = new ModelOperatorConfiguration(faceModel.bytes, SecureMRModelType.QnnContextBinary, "main");
             anchorBytes = anchorMatrixAsset.bytes;
             leftEyeUVGlobal = provider.CreateTensor<int, Point>(2, new TensorShape(new[] { 1 }), new []{3,4});
 
@@ -308,7 +308,7 @@ namespace PicoXR.SecureMR.Demo
                     
                     // 1. model inference
                     Debug.LogWarning("Model inference");
-                    var ufoAnchor = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 1, yoloObjDimension , 4}));
+                    var ufoAnchor = modelInferencePipeline.CreateTensor<float, Matrix>(4, new TensorShape(new[] { 1, yoloObjDimension}));
                     var ufoScores = modelInferencePipeline.CreateTensor<float, Matrix>(1, new TensorShape(new[] { 1, yoloObjDimension}));
                     var classIdx = modelInferencePipeline.CreateTensor<int, Matrix>(1, new TensorShape(new[] { 1, yoloObjDimension}));
                     

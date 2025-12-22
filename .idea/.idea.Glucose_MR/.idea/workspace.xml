@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="1c992c3c-8a6a-4727-8915-2a30548f28c0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Glucose_MR/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Glucose_MR/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Yolo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Yolo.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,6 +16,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3ea01e77be99618395f448b16bd7cc2bd4248bd9e5d8474964b2d97f39c5d74/System.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d44b17e136d09081da1e8fd0e8c83fde60e11818b9f2442d7ed8cb733fae895e/System.Collections.Generic.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/PICO Unity Integration SDK-3.3.2-20251111/Runtime/Scripts/PXR_Plugin.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/PICO Unity Integration SDK-3.3.2-20251111/Runtime/Scripts/SecureMR/Core/PXR_SecureMROperatorCore.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/MnistFrame.cs" root0="FORCE_HIGHLIGHTING" />
@@ -108,7 +110,7 @@
       <workItem from="1763312013642" duration="3839000" />
       <workItem from="1766000545123" duration="52029000" />
       <workItem from="1766198141743" duration="285000" />
-      <workItem from="1766362841276" duration="1275000" />
+      <workItem from="1766362841276" duration="5512000" />
     </task>
     <servers />
   </component>
