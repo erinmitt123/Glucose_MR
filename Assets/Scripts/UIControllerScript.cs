@@ -15,22 +15,30 @@ public class UIControllerScript : MonoBehaviour
     public event Action OnEmpty;
 
     private bool wasEmpty = true;
+    private bool isStartup = true;
 
-
-    public void OnTypeTwoClicked()
+    public void OnTypeTwoClicked(bool isOn = true)
     {
+        if (!isOn) { return; }
         isTypeOne = false;
         setupGlucoseCanvas();
     }
-    public void OnTypeOneClicked()
+    public void OnTypeOneClicked(bool isOn = true)
     {
+        if (!isOn) { return; }
         isTypeOne = true;
         setupGlucoseCanvas();
     }
     public void setupGlucoseCanvas()
     {
-        diabetesCanvas.SetActive(false);
-        foodCanvas.SetActive(true);
+        if (isStartup)
+        {
+            diabetesCanvas.SetActive(false);
+            foodCanvas.SetActive(true);
+            isStartup = false;
+        }
+        else { FoodInfo.Instance.UpdateValuesAndDisplay(); }
     }
+
 
 }
