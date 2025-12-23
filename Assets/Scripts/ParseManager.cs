@@ -85,6 +85,7 @@ public class ParseManager : MonoBehaviour
         else
         {
             Debug.Log("No float found. Please repeat and state your glucose level.");
+            glucoseLevel = 100;
         }
     }
 
