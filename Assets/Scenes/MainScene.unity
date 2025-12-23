@@ -217,6 +217,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 500129321444920112, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
+      propertyPath: glucoseLevel
+      value: 100.2
+      objectReference: {fileID: 0}
     - target: {fileID: 3021413879274748351, guid: 471986d0ea21ded48b8fb2e5e4a6f6a0, type: 3}
       propertyPath: leftHand
       value: 

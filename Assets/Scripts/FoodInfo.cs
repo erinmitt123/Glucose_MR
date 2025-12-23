@@ -8,6 +8,7 @@ using UnityEngine.UI;
 //attach this to each food when identified
 public class FoodInfo : MonoBehaviour
 {
+    int calledCount = 0;
     /*This script displays the food that is scanned and gives all needed macros and nutrition information.
      * It also takes in glucose val and diabetes type the user has 
      * and figures out if what information to display on if the user should eat it.
@@ -96,44 +97,47 @@ public class FoodInfo : MonoBehaviour
     //updates display with food values and grades
     public void UpdateValuesAndDisplay()
     {
+        calledCount++;
+        food.text = "Food:"+calledCount;
         isTypeOne = uiController.isTypeOne;
 
         glucoseVal = ParseManager.Instance.glucoseLevel;
+        food.text = "Food:!" + calledCount;
         secureMLValues = CsvToDoubleArray.Instance.nutritionDataArray[ParseManager.Instance.identifiedObjectIndex];
-
+        food.text = "Food:!!" + calledCount;
         Debug.Log("FoodInfo received " + secureMLValues.Length + " values.");
-        food.text = "Food: "+  GetStringForInt((int)secureMLValues[8]);
-        carbs.text = "Carbs: " + secureMLValues[1].ToString();
-        fats.text = "Fats: " + secureMLValues[2].ToString();
-        fiber.text = "Fiber: " + secureMLValues[3].ToString();
-        protein.text = "Protein: " + secureMLValues[4].ToString();
-        sugar.text = "Sugar: " + secureMLValues[5].ToString();
-        glucose.text = $"Glucose: {glucoseVal}";
+            food.text = "Food:!! " + GetStringForInt((int)secureMLValues[8]);
+            carbs.text = "Carbs: " + secureMLValues[1].ToString();
+            fats.text = "Fats: " + secureMLValues[2].ToString();
+            fiber.text = "Fiber: " + secureMLValues[3].ToString();
+            protein.text = "Protein: " + secureMLValues[4].ToString();
+            sugar.text = "Sugar: " + secureMLValues[5].ToString();
+            glucose.text = $"Glucose: {glucoseVal}";
 
-        if (secureMLValues[6] < 0)
-        {
-            secureMLValues[6] = 0;
-        }
+            if (secureMLValues[6] < 0)
+            {
+                secureMLValues[6] = 0;
+            }
 
-        addedSugars.text = "Added Sugars: " + secureMLValues[6].ToString();
-        perUnit.text = "Per 100g"; //+ secureMLValues[7].ToString();
-        double score = CalculateScore(secureMLValues, glucoseVal);
+            addedSugars.text = "Added Sugars: " + secureMLValues[6].ToString();
+            perUnit.text = "Per 100g"; //+ secureMLValues[7].ToString();
+            double score = CalculateScore(secureMLValues, glucoseVal);
 
-        if (isTypeOne)
-        {
-            TypeOneHelper(score);
-        }
-        else
-        {
-            string letterGrade = CalculateGrade(score);
-            ChooseColor(letterGrade);
-            grade.text = "Score: " + score.ToString() + "%, Grade: " + letterGrade;
-        }
+            if (isTypeOne)
+            {
+                TypeOneHelper(score);
+            }
+            else
+            {
+                string letterGrade = CalculateGrade(score);
+                ChooseColor(letterGrade);
+                grade.text = "Score: " + score.ToString() + "%, Grade: " + letterGrade;
+            }
 
-        foreach (double value in secureMLValues)
-        {
-            Debug.Log(value);
-        }
+            foreach (double value in secureMLValues)
+            {
+                Debug.Log(value);
+            }
     }
 
     //We were told a grading system was not useful for type one and to instead give this feedback
