@@ -7,6 +7,10 @@
 
 ---
 
+## Project Blurb
+
+Turn every glance into guidance on managing your glucose levels with Glucose MR. Our Mixed Reality experience will allow anyone with Type 1 or 2 Diabetes to input their glucose levels, and then get live feedback using a food recognition Machine Learning Database and SecureMR to fully protect their personal information. They will be given instant feedback on how healthy each food is for them, given their glucose levels, and how many carbs they are consuming. 
+
 ## Inspiration
 
 Managing diabetes often requires constant attention to diet, portion sizes, and nutritional balance, which can feel overwhelming in daily life. The inspiration for developing Glucose MR came from the desire to make this process simpler and more intuitive.
