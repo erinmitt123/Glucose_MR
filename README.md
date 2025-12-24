@@ -66,7 +66,7 @@ Because of **SecureMR**, all camera processing happens locally, ensuring complet
 3. (Optional) Copy the contents to your own Unity project if you want to build on an existing project
 4. Open the Main Scene, and build the project into an apk for your headset
 
-### Repository Structure
+### Repository Structure (What's included)
 This repository contains:
 * **Main Glucose MR application** in the root directory
 * **Food detection module** following SecureMR sample at: https://github.com/erinmitt123/Glucose_MR/tree/main/food_detection
@@ -148,7 +148,7 @@ Pipeline:
 
 ---
 
-## What's next for Glucose MR
+## What's next for Glucose MR (potential bugs)
 
 * **Deploying an ONNX-optimized food detection model**
   Not just for faster inference, but for more stable, low-latency MR performance on PICO devices.
@@ -177,8 +177,15 @@ Pipeline:
 * **Platform expansion**
   Bringing Glucose MR to Vision Pro, Quest 3, and other XR headsets.
 
----
+  ---
 
+## What's Not Included
+Currently, the food detection with secure MR and UI displaying the information with the database are in separate repositories. This is because currently, the food detection database does not allow image or text display as an output.
+
+The food database has been truncated to only the necessary foods that are detected by the object recognition library we implemented. This could easily be expanded to allow a live search through the database for each recognized food.
+
+---
+ 
 ## Research Citations & Technical References
 
 **Reynolds A, Mitri J. Dietary Advice For Individuals with Diabetes.** Updated 2024 Apr 28. In: Feingold KR, Ahmed SF, Anawalt B, et al., editors. Endotext [Internet]. South Dartmouth (MA): MDText.com, Inc.; 2000–.
