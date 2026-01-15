@@ -21,7 +21,8 @@ Our goal is to turn diabetes management into a proactive, empowering experience,
 
 ---
 ## Project Deep Dive
-For a more detailed dive into our stack and architecture decisions, please refer to our [Notion page](https://bottlenose-tailor-d62.notion.site/Privacy-First-Spatial-ML-How-a-StanfordXR-Team-Built-Glucose-MR-for-Real-Time-Nutrition-Awareness-2c33b44801cc80c5bca5ff9b3ca577b6).
+For a more detailed dive into our stack and architecture decisions, please refer to our [Notion blog post](https://bottlenose-tailor-d62.notion.site/Privacy-First-Spatial-ML-How-a-StanfordXR-Team-Built-Glucose-MR-for-Real-Time-Nutrition-Awareness-2c33b44801cc80c5bca5ff9b3ca577b6).
+
 ## What it does
 
 Glucose MR is a privacy-first MR assistant that provides real-time, glucose-aware feedback on the foods around you.
