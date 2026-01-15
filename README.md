@@ -112,14 +112,16 @@ Pipeline:
 6. The MR UI displays a **simple rating + emoji + recommendation text**.
 
 ### Speech Input
-* Built speech input for glucose readings.
+* Utilized Pico's unique Speech Service engine to transcribe voice input into parseable strings
 * Pico's security originally blocked our initial speech API attempts, so we created a custom workaround to enable reliable recognition.
+* Built a custom speech parser in C++ for accurate, flexible parsing and extraction of numerical glucose data against a wide variety of phrasings and speech
 
 ### User Experience
 * Uses emojis (super happy → warning → critical)
 * RGB health ratings
 * Minimal text, highly readable in MR
 * Adjusts ratings dynamically based on whether a user is low, normal, or high.
+* Supports both hand tracking and controllers, allowing for ultimate flexibility and ease of use, with hand poses taking the place of buttons.
 
 ---
 
@@ -135,6 +137,8 @@ Pipeline:
 * An end-to-end system: **User Input → Nutrition DB → Diabetes Logic → MR UI**
 * Running Object Detection SecureMR on PICO
 * Enabling Speech Input Interface to interact with assets in Unity Pico projects
+* Building custom parsers for feature extraction from speech in performant pipelines
+* Seamless hand-tracking and hand-pose detection 
 * A glucose-aware adaptive rating system that feels alive and reactive.
 * Getting speech recognition working securely.
 * Building an experience that remains simple despite complex calculations under the hood.
