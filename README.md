@@ -20,7 +20,8 @@ People with Type 1 and Type 2 Diabetes shared that they constantly estimate carb
 Our goal is to turn diabetes management into a proactive, empowering experience, all while keeping users' data completely private with SecureMR.
 
 ---
-
+## Project Deep Dive
+For a more detailed dive into our stack and architecture decisions, please refer to our [Notion page](https://bottlenose-tailor-d62.notion.site/Privacy-First-Spatial-ML-How-a-StanfordXR-Team-Built-Glucose-MR-for-Real-Time-Nutrition-Awareness-2c33b44801cc80c5bca5ff9b3ca577b6).
 ## What it does
 
 Glucose MR is a privacy-first MR assistant that provides real-time, glucose-aware feedback on the foods around you.
